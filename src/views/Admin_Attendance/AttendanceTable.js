@@ -331,26 +331,30 @@ const AttendanceTable = () => {
         </Masonry>
       {/* </Conainer> */}
       <div className="d-flex align-items-center mt-2 mb-2">
-  <Col md={2} className="mr-1">
+      <Col md={2} className="pr-1">
+    <AlertTriangle size={20} color="red"/> -
+    <span className="ms-1">Absent</span>
+    </Col>
+  <Col md={2} className="pr-1">
         <Wifi size={20} color="blue"/> - 
         <span className="ms-1">WFH</span>
         </Col>
     {/* </div> */}
     
-    <Col md={2} className="mr-1">
+    <Col md={2} className="pr-1">
         <Monitor size={20} color="green"/> - 
         <span className="ms-1">Office</span>
     </Col>
-    <Col md={2} className="mr-1">
+    <Col md={2} className="pr-1">
     W -
     <span className="ms-1">Weekend</span>
     </Col>
-    <Col md={2} className="mr-1">
+    <Col md={2} className="pr-1">
         <Calendar size={20} color="#A020F0"/> - 
         <span className="ms-q">Public Holiday</span>
         </Col>
         <Col md={4}>
-    AL, SL, CL, BL, ML, PL, HL - 
+    Leave Initials - 
     <span className="ms-1">Leave</span>
     </Col>
 </div>

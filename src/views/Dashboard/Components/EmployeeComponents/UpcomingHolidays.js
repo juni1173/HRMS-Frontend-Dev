@@ -14,7 +14,6 @@ import SwiperCore, {
 import {Swiper, SwiperSlide} from 'swiper/react/swiper-react'
 // ** Icons Imports
 import * as Icon from 'react-feather'
-import { FaHandHoldingMedical } from "react-icons/fa"
 
 // ** Reactstrap Imports
 import { Card, CardHeader, CardTitle, CardBody, Badge } from 'reactstrap'
@@ -22,7 +21,7 @@ import '@styles/react/libs/swiper/swiper.scss'
 
 // ** Init Swiper Functions
 SwiperCore.use([Navigation, Grid, Pagination, EffectFade, EffectCube, EffectCoverflow, Autoplay, Lazy, Virtual])
-const MedicalApprovals = ({ data }) => {
+const UpcomingHolidays = ({ data }) => {
 
     const params = {
         className: ' p-1',
@@ -34,15 +33,16 @@ const MedicalApprovals = ({ data }) => {
       }
 
   const renderPendingLeavesApprovals = () => {
+    
     return data.map(item => {
       return (
         <SwiperSlide className='rounded swiper-shadow'>
             <div key={item.id} className=''>
             <div className='text-center'>
-            <a href='../statusrequests/'><Avatar className='rounded mb-2' color='light-primary' icon={<FaHandHoldingMedical size={20}/>} /></a>
+                <Avatar className='rounded mb-2' color='light-primary' icon={<Icon.Calendar/>} />
                 <div>
-                <h6 className='transaction-title'>{item.employee_name.toUpperCase()}</h6>
-                <small> {`Rs ${item.amount}`}</small>
+                <h6 className='transaction-title'>{item.title.toUpperCase()}</h6>
+                <small> {`${item.date && item.date }`}</small>
                 </div>
             </div>
             </div>
@@ -53,23 +53,23 @@ const MedicalApprovals = ({ data }) => {
 
   return (
     <Card className='card-transaction' style={{height:'250px'}}>
-      <CardHeader>
+      <CardHeader >
       <Badge pill color='primary' className='badge-up'>
           {data.length}
         </Badge>
-        <CardTitle tag='h4'>Medical Approvals</CardTitle>
-        <a href='../statusrequests/'><Icon.ArrowRight size={18} className='cursor-pointer' /></a>
+        <CardTitle tag='h4' >Upcoming Holidays</CardTitle>
+        {/* <Icon.ArrowRight size={18} className='cursor-pointer' /> */}
       </CardHeader>
         <CardBody>
-        <Swiper {...params}>
+            <Swiper {...params}>
                 {data && data.length > 0 ? (
                     renderPendingLeavesApprovals()
                 ) : (
                     <SwiperSlide className='rounded swiper-shadow'>
                         <div className='text-center'>
-                            <Avatar className='rounded mb-2' color='light-secondary' icon={<FaHandHoldingMedical size={20}/>} />
+                            <Avatar className='rounded mb-2' color='light-secondary' icon={<Icon.Calendar/>} />
                             <div>
-                            <h6 className='transaction-title'>No Medical Request Found!</h6>
+                            <h6 className='transaction-title'>No Holiday Found</h6>
                             </div>
                         </div>
                     </SwiperSlide>
@@ -80,4 +80,4 @@ const MedicalApprovals = ({ data }) => {
   )
 }
 
-export default MedicalApprovals
+export default UpcomingHolidays
