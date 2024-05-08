@@ -357,6 +357,15 @@ const Routes = [
   {
     path: '/admin/payroll',
     component: lazy(() => import('../../views/admin-payroll/Tabs'))
+  },
+  {
+    path: '/zoom',
+    component: lazy(() => import('../../views/Zoom/index'))
+  },
+  {
+    path: '/zoommeeting/:id/:pass/:token/:role',
+    component: lazy(() => import('../../views/Zoom/Components/JoinMeeting')),
+    layout:'BlankLayout'
   }
 ]
 

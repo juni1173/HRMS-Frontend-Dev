@@ -1,4 +1,4 @@
-import { Home, CheckSquare, Bookmark, HelpCircle, Book, Clock, Trello, Paperclip } from 'react-feather'
+import { Home, CheckSquare, Bookmark, HelpCircle, Book, Clock, Trello, Paperclip, Video } from 'react-feather'
 // const checkVisibility = (list, apiList) => {
   
 //   for (let i = 0; i < apiList.length; i++) {
@@ -154,6 +154,12 @@ let nav = []
     title: 'Interviews',
     icon: <Trello size={12} />,
     navLink: '/employee/interviews'
+  },
+  {
+    id: 'nav-meeting',
+    title: 'Meetings',
+    icon: <Video size={12} />,
+    navLink: '/zoom'
   }
 //   {
 //     id: 'nav-roles-permissions',

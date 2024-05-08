@@ -9,7 +9,7 @@ import apiHelper from '../Helpers/ApiHelper'
 import SearchHelper from "../Helpers/SearchHelper/SearchByObject"
 // import { Calendar } from "react-multi-date-picker"
 import '../../App.css'
-const AttendanceTable = () => {
+const AttendanceHours = () => {
     const yearoptions = []
     const currentDate = new Date()
     // Get the current month and year
@@ -83,7 +83,7 @@ const AttendanceTable = () => {
         const formData = new FormData()
         formData['month'] = monthvalue
         formData['year'] = yearvalue
-        await Api.jsonPost(`/attendance/status/`, formData)
+        await Api.jsonPost(`/all/employee/current/month/atteandance/`, formData)
         .then(result => {
             if (result) {
                 if (result.status === 200) {
@@ -154,17 +154,17 @@ const AttendanceTable = () => {
             setItemOffset(newOffset)
             }
             const csvData = [
-                ["Emp Code", "Name", "WFH", "Presents", "Absents", ...uniqueDates.map((item) => { return item.date })],
+                ["Emp Code", "Name", "Total Hours", ...uniqueDates.map((item) => { return item.date })],
                 ...preData.map((item) => [
                   item.emp_code,
-                  item.name,
-                  item.attendance_status_data?.total_wfh || '0',
-                  item.attendance_status_data?.total_presents || '0',
-                  item.attendance_status_data?.total_absences || '0',
+                  item.employee_name,
+                  item.total_monthly_hours ? item.total_monthly_hours : '0',
                   ...uniqueDates.map((date) => {
-                    const statusItem = item.attendance_status_data?.data.find((status) => status.date === date)
-                    return statusItem ? statusItem.attendance_status : 'No Data Found'
-                  })
+                    const statusItem = item.daily_hours.find(
+                        (status) => status.date === date.date
+                    )
+                    return statusItem ? statusItem.hours : '0'
+                })
                  
                 ])
               ]
@@ -179,7 +179,7 @@ const AttendanceTable = () => {
            <Container>
            <Row>
   <Col md={3} xs={12}>
-    <h3 className="mt-2">Attendance Overview</h3>
+    <h3 className="mt-2">Time Tracking</h3>
   </Col>
 <Col md={3}></Col>
 <Col md={6} className="d-flex justify-content-end align-items-center">
@@ -256,7 +256,7 @@ const AttendanceTable = () => {
                         <InputGroupText>
                             <Search size={14} />
                         </InputGroupText>
-                        <Input placeholder='search employee name...'  onChange={e => { getSearch({list: preData, key: 'name', value: e.target.value }) } }/>
+                        <Input placeholder='search employee name...'  onChange={e => { getSearch({list: preData, key: 'employee_name', value: e.target.value }) } }/>
                     </InputGroup>
                 </Col>
 </Row>
@@ -268,11 +268,7 @@ const AttendanceTable = () => {
                             <tr>
                             <th className="px-1">Emp code</th>
                             <th className="px-1">Name</th>
-                            <th className="px-1">WFH</th>
-        <th className="px-1">P</th>
-        <th className="px-1">A</th>
-        <th className="px-1">L</th>
-        <th className="px-1">H</th>
+        <th className="px-1">Total Hours</th>
                             {uniqueDates.map((date, index) => (
            <th key={index} className="px-1">
            {String(date.date).slice(-2)} {/* Extract the last two characters */}
@@ -288,24 +284,19 @@ const AttendanceTable = () => {
         <tbody >
             <tr key={key}>
             <td className="px-1">{item.emp_code}</td>
-            <td className="px-1 text-small" >{item.name}</td>
-            <td className="px-1"><strong>{item.attendance_status_data?.total_wfh || '0'}</strong></td>
-<td className="px-1"><strong>{item.attendance_status_data?.total_presents || '0'}</strong></td>
-<td className="px-1"><strong>{item.attendance_status_data?.total_absesnts || '0'}</strong></td>
-<td className="px-1"><strong>{item.attendance_status_data?.total_leaves || '0'}</strong></td>
-<td className="px-1"><strong>{item.attendance_status_data?.total_holidays || '0'}</strong></td>
-          {item.attendance_status_data && item.attendance_status_data.data ? (
+            <td className="px-1 text-small" >{item.employee_name}</td>
+            <td className="px-1 text-nowrap"><strong>{item.total_monthly_hours ? item.total_monthly_hours : '0'}</strong></td>
+          {item.daily_hours ? (
                         uniqueDates.map((date, index) => {
-                            const statusItem = item.attendance_status_data.data.find(
+                            const statusItem = item.daily_hours.find(
                                 (status) => status.date === date.date
                             )
                             return (
                                 <td
                                 key={index}
-                                className="px-1"
+                                className="px-1 text-nowrap"
                               >
-                          {statusItem && statusItem.attendance_status !== null ?  statusItem.attendance_status === 'W' ? statusItem.attendance_status : statusItem.attendance_status === 'L' ?    statusItem.comments.split(' ').map(word => word.charAt(0)).join('') :  statusItem.attendance_status === 'P' ? <Monitor size={12} color="green"/> :  statusItem.attendance_status === 'WFH' ? <Wifi size={12} color="blue"/> : statusItem.attendance_status === 'H' ? <Calendar color='#A020F0' size={12}/> : <AlertTriangle color="red" size={12}/>  :    <AlertTriangle color="red" size={12}/>}
-
+                          {statusItem && statusItem.hours !== null ?  statusItem.hours : '0'}
                               </td>
                               
                             )
@@ -329,35 +320,6 @@ const AttendanceTable = () => {
         )
         }
         </Masonry>
-      {/* </Conainer> */}
-      <div className="d-flex align-items-center mt-2 mb-2">
-      <Col md={2} className="pr-1">
-    <AlertTriangle size={20} color="red"/> -
-    <span className="ms-1">Absent</span>
-    </Col>
-  <Col md={2} className="pr-1">
-        <Wifi size={20} color="blue"/> - 
-        <span className="ms-1">WFH</span>
-        </Col>
-    {/* </div> */}
-    
-    <Col md={2} className="pr-1">
-        <Monitor size={20} color="green"/> - 
-        <span className="ms-1">Office</span>
-    </Col>
-    <Col md={2} className="pr-1">
-    W -
-    <span className="ms-1">Weekend</span>
-    </Col>
-    <Col md={2} className="pr-1">
-        <Calendar size={20} color="#A020F0"/> - 
-        <span className="ms-q">Public Holiday</span>
-        </Col>
-        <Col md={4}>
-    Leave Initials - 
-    <span className="ms-1">Leave</span>
-    </Col>
-</div>
         <div className="mt-2">    
         <Container> 
            
@@ -383,4 +345,4 @@ const AttendanceTable = () => {
     </Fragment>
    )
 }
-export default AttendanceTable
+export default AttendanceHours
