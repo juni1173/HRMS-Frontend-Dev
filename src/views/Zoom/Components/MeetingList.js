@@ -1,6 +1,6 @@
 import React, { Fragment, useEffect, useState } from 'react'
 import apiHelper from '../../Helpers/ApiHelper'
-import { Table, Row, Input, Col, Button, Spinner, Modal, ModalBody, ModalHeader, Badge, Offcanvas, OffcanvasBody } from 'reactstrap'
+import { Card, Table, Row, Input, Col, Button, Spinner, Modal, ModalBody, ModalHeader, Badge, Offcanvas, OffcanvasBody, CardHeader } from 'reactstrap'
 import { Airplay, Clock, Copy, ExternalLink, UserPlus, Users } from 'react-feather'
 // import Swal from 'sweetalert2'
 // import withReactContent from 'sweetalert2-react-content'
@@ -11,7 +11,8 @@ import { useHistory } from 'react-router-dom/cjs/react-router-dom.min'
 // import OtherParticipants from './OtherParticipants'
 import ParticipantsDetails from './ParticipantsDetails'
 import CreateMeetingForm from './CreateMeeting'
-import { MdOutlineMeetingRoom } from 'react-icons/md'
+import zoomus from '../../../assets/images/illustration/zoomus.svg'
+import meet from '../../../assets/images/illustration/meet.svg'
 const MeetingList = ({accessToken}) => {
     const Api = apiHelper()
     // const Employees = EmployeeHelper()
@@ -29,6 +30,7 @@ const MeetingList = ({accessToken}) => {
   // const [systemParticipants, setSystemParticipants] = useState([])
   // const [othersParticipants, setOthersParticipants] = useState([])
   const [canvasOpen, setCanvasOpen] = useState(false)
+  const [showCreateMeeting, setShowCreateMeeting] = useState(false)
   const toggleCanvasStart = () => {
 
     setCanvasOpen(!canvasOpen)
@@ -197,67 +199,65 @@ const participantsDetails = async (id) => {
     const CallBack = () => {
       fetchMeetings()
     }
+    const handleShow = () => {
+      setShowCreateMeeting(!showCreateMeeting)
+    }
   
   return (
     <Fragment>
         <div>
       <h2>Create Meeting</h2>
+      <Button className='mt-2 mb-3 btn btn-primary' onClick={() => { handleShow() }}>
+        Create Meeting
+      </Button>
+      {showCreateMeeting ? <>
       <CreateMeetingForm CallBack={CallBack}/>
-      {/* <Row>
-        <Col md='12' className='border-right'>
-        <form onSubmit={handleSubmit}>
-            <Row className='mb-2'>
-            <Col md='3' className='mb-2'>
-                <Input
-                type="text"
-                id="meetingTitle"
-                placeholder='Topic'
-                value={meetingTitle}
-                onChange={(e) => setMeetingTitle(e.target.value)}
-                required
-                />
-            </Col>
-            <Col md='2' className='mb-2'>
-                <Input
-                type="datetime-local"
-                id="meetingDateTime"
-                placeholder='Schedule Date Time'
-                value={meetingDateTime}
-                onChange={(e) => setMeetingDateTime(e.target.value)}
-                required
-                />
-            </Col>
-           
-            <Col md='2'>
-                {Object.values(systemParticipants).length > 0 ? (
-                    <Button className='btn btn-success btn-sm' onClick={() => setParticipantsModal(!participantsModal)}><Users color='white' size={20}/> Employees</Button>
-                ) : (
-                    <Button className='btn btn-warning btn-sm' onClick={() => setParticipantsModal(!participantsModal)}><UserPlus color='white' size={20}/> Employees</Button>
-                )}
-            </Col>
-            <Col md='2'>
-            {Object.values(othersParticipants).length > 0 ? (
-                <Button className='btn btn-success btn-sm' onClick={() => setOthersModal(!othersModal)}><Users color='white' size={20}/> Others</Button>
-            ) : (
-                <Button className='btn btn-warning btn-sm' onClick={() => setOthersModal(!othersModal)}><UserPlus color='white' size={20}/> Others</Button>
-            )}
-                
-            </Col>
-            <Col md='3'>
-                <Button type="submit" className='btn btn-primary btn-sm'><Clock color='white' size={20} /> Schedule</Button>
-            </Col>
-            </Row>
-        
-            {/* Add more input fields for meeting details as needed */}
-            
-        {/* </form>
-        </Col>
-      </Row> */} 
-      
+      </> : null}
         </div>
         {!loading ? (
             <div className="meeting-list">
-            <Table responsive bordered striped>
+              <Row>
+              {Object.values(meetings).length > 0 ? (
+                                        meetings.slice().reverse().map(meeting => (
+                                          <Col md={4} className="d-flex align-items-center justify-content-center">
+                                          <Card className="px-1">
+                                          
+                                            <Badge pill color='primary' className='badge-up'>
+          {meeting.status}
+        </Badge>
+                                            <Row>
+                                            <Col md={12} className='text-center' style={{marginTop: -20}}>
+                                          
+                                              {meeting.meeting_medium_title === 'zoom' || meeting.meeting_medium_title === 'Zoom' ?   <img role='button' onClick={() => redirectToMeeting(meeting)} src={zoomus} alt='Zoom' className='mr-2' style={{ width: '50px', height: '50px' }}/>  : meeting.meeting_medium_title === 'meet' || meeting.meeting_medium_title === 'Meet' ?  <img role='button' src={meet} onClick={() => { redirectToMeeting(meeting) }} alt='Meet' className='mr-2' style={{ width: '50px', height: '50px' }}/>  :  <Airplay role='button' color='blue' onClick={() => redirectToMeeting(meeting)}/>} 
+                                             
+                                              </Col>
+                                              <div style={{marginTop: -30}}>
+                                             <Users  onClick={() => participantsDetails(meeting.meeting)} color='blue' className='mt-1'/>
+                                            </div>
+                                              <Col md={12} className="mt-1 text-center">{meeting.topic}</Col>
+                                            <Col md={12} className='text-center Small-font mt-1'>{meeting.start_time ? meeting.start_time : 'No Time Found'} {meeting.date ? meeting.date : 'No Time Found'}</Col>
+                                            
+                                            {/* <Col md={6} className="mt-1 ">Status : {meeting.status ? <Badge className='badge-glow' color='success'>{meeting.status.toUpperCase()}</Badge> : 'N/A'}</Col> */}
+                                           
+                                            <Col md={6} className="mt-1 mb-1">Join Url : <a title='Redirect to meeting link' href={meeting.join_url}><ExternalLink color='blue' size={20}/></a> | <Copy alt="copy link" color='gray' size={20} onClick={() => handleCopy(meeting.join_url)}/></Col>
+                                            <Col md={6} className="mt-1 mb-1">
+                                              {meeting.is_host && (
+                                                <>
+                                                Host Url : <a title='Redirect to meeting link' href={meeting.start_url}><ExternalLink color='blue' size={20}/></a> | <Copy alt="copy link" color='gray' size={20} onClick={() => handleCopy(meeting.start_url)}/>
+                                                </>
+                                              )}
+                                            </Col>
+                                            {/* <Col md={12} className="d-flex justify-content-center mt-2 mb-2">
+                                            <button className='border-0' onClick={() => redirectToMeeting(meeting)}>
+                                                <Airplay color='blue'/></button>
+                                            </Col> */}
+                                            </Row>
+                                          </Card>
+                                        </Col>
+                                        
+                                        ))) : <div className='text-center'>No data found</div>  }
+      </Row>
+            {/* <Table responsive bordered striped>
                             <thead className='table-dark text-center'>
                                 <tr>
                                     <th>Date/Time</th>
@@ -275,7 +275,7 @@ const participantsDetails = async (id) => {
                                             <td>{meeting.date ? meeting.date : 'no date found'}<br></br>{meeting.start_time ? meeting.start_time : 'No Time Found'}</td>
                                             <td>{meeting.topic}</td>
                                             <td className='text-center'>{meeting.status ? <Badge className='badge-glow' color='success'>{meeting.status.toUpperCase()}</Badge> : 'N/A'}</td>
-                                            {/* Remove the status field */}
+                                          
                                             <td className='text-center'>
                                                 <Users onClick={() => participantsDetails(meeting.meeting)} color='blue'/>
                                             </td>
@@ -289,7 +289,7 @@ const participantsDetails = async (id) => {
                                                 <br></br>
                                                 <br></br>
                                                 <span style={{padding:'22px'}}>Join Url</span> <a title='Redirect to meeting link' href={meeting.join_url}><ExternalLink color='blue' size={20}/></a> | <Copy alt="copy link" color='gray' size={20} onClick={() => handleCopy(meeting.join_url)}/>
-                                                {/* <a title='Redirect to meeting link' href={meeting.is_host === true ? meeting.start_url : meeting.join_url}><ExternalLink color='blue' size={20}/></a> | <Copy alt="copy link" color='gray' size={20} onClick={() => handleCopy(meeting.is_host === true ? meeting.start_url : meeting.join_url)}/> */}
+                                               
                                             </td>
                                             <td className='text-center'>
                                             <button className='border-0' onClick={() => redirectToMeeting(meeting)}>
@@ -306,7 +306,7 @@ const participantsDetails = async (id) => {
                                 
                                 }
                             </tbody>
-                        </Table>
+                        </Table> */}
     
         </div>
         ) : <div className='text-center'><Spinner/></div>}

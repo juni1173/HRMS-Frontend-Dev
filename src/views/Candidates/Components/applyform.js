@@ -473,7 +473,7 @@ const applyForm = () => {
                         </label>
                             <Input
                             id="Reference name"
-                            value={name}
+                            value={referenceName}
                             name="Reference name"
                             className="Reference name"
                             placeholder="Reference name"
@@ -486,7 +486,7 @@ const applyForm = () => {
                         </label>
                             <Input
                             id="Reference connection"
-                            value={name}
+                            value={referenceConnection}
                             name="Reference connection"
                             className="Reference connection"
                             placeholder="Reference connection"

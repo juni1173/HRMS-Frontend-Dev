@@ -12,6 +12,7 @@ import EvaluationDetail from "./EvaluationComponents/EvaluationDetail"
 import EmailDetail from "./EmailComponents/EmailDetail"
 import EmailSetup from "./EmailComponents/EmailSetup"
 import Disqualify from "./DisqualifyCandidate/Disqualify"
+import PreviousRecord from "./PreviousRecord"
 
 const CandidateListTable = (props) => {
     const Api = apiHelper()
@@ -21,10 +22,12 @@ const CandidateListTable = (props) => {
     const [emailModal, setEmailModal] = useState(false)
     const [disqualifyModal, setDisqualifyModal] = useState(false)
     const [cand_uuid, setcand_uuid] = useState(null)
+    const [cand_cnic, setcand_cnic] = useState(null)
     const [current_cand, set_current_cand] = useState([])
     const [currentStage, setCurrentStage] = useState(null)
     const [activeInterviewModal, setInterviewModal] = useState(1)
     const [activeEvaluationModal, setEvaluationModal] = useState(1)
+    const [recordModal, setRecordModal] = useState(false)
     const [activeEmailModal, setEmailTemplateModal] = useState(1)
     const [canemail, setCanemail] = useState()
     const [cand_name, setcand_name] = useState()
@@ -100,6 +103,11 @@ const CandidateListTable = (props) => {
         setEvaluationModal(active)
         setEvaluateModal(true)
         } 
+        const openRecordModal = (cnic) => {
+            setcand_cnic(cnic)
+            setRecordModal(true)
+            // setRecoModal(true)
+            } 
     const openEmailModal = (uuid, stage_id, active) => {
         setcand_uuid(uuid)
         if (stage_id) setCurrentStage(stage_id)
@@ -192,12 +200,14 @@ const CandidateListTable = (props) => {
            <div>
             <Card>
                 <CardBody>
+                    <div><span className="Small-font">PS: Candidates marked with an asterisk (*) are previous applicants.</span></div>
                     <Table bordered responsive className="table table-sm my-1 Small-font">
                         <thead className='table-dark text-center'>
                             <tr>
                                 <th className="px-1 ps-0">Name</th>
                                 <th className="px-1">Email</th>
                                 <th className="px-1">CNIC</th> 
+                                <th className="me-2">Actions</th>
                                 <th className="px-1">Job title</th>                   
                                 <th className="px-1">Time Interval</th>
                                 <th className="px-1">Score</th>
@@ -206,7 +216,7 @@ const CandidateListTable = (props) => {
                                 <th className="px-1">Interview</th>
                                 <th className="px-1">Evaluation</th>
                                 <th className="px-1">Disqualify</th> */}
-                                <th className="me-2">Actions</th>
+                                
                                 <th className="px-1">Resume</th>
                             </tr>
                         </thead>
@@ -215,9 +225,85 @@ const CandidateListTable = (props) => {
                         {Object.values(props.data).length > 0 ? (
                             props.data.map((candidate, index) => (
                                 <tr key={index}>
-                                    <td className="px-1">{candidate.candidate_name ? candidate.candidate_name : <Badge color="light-danger">N/A</Badge>}</td>
+                                    <td className="px-1">{candidate.candidate_name ? candidate.candidate_name : <Badge color="light-danger">N/A</Badge>}{candidate.is_already_applied ? <Badge color="light-danger">*</Badge> : null}</td>
                                     <td className="px-1">{candidate.email ? candidate.email : <Badge color="light-danger">N/A</Badge>}</td>
                                     <td className="text-nowrap px-1">{candidate.cnic_no ? candidate.cnic_no : <Badge color="light-danger">N/A</Badge>}</td> 
+                                    <td>
+                                    <Dropdown className="me-2"  isOpen={dropdownOpen[candidate.uuid]} toggle={() => toggleDropdown(candidate.uuid)} direction="start">
+                                {/* <DropdownToggle className="no-background m-0 px-0"> */}
+                                <div onClick={() => toggleDropdown(candidate.uuid)}><MoreVertical/></div>
+        {/* </DropdownToggle> */}
+        <DropdownMenu>
+            <DropdownItem>
+            <button className='border-0 no-background' onClick={() => openEmailModal(candidate.uuid, candidate.stage, 1)}>
+                                                       <span className="mr-1"><Mail size={12}/></span>Mail 
+                                                    </button>
+            </DropdownItem>
+            <DropdownItem>
+            {/* <div className={candidate.is_qualified ? "col-lg-6 p-1" : "col-lg-12 text-center"}> */}
+                                                    <button className='border-0 no-background' onClick={() => openEmailModal(candidate.uuid, null, 2)}>
+                                                    <span className="mr-1"><FileText size={12}/></span> Mail History
+                                                    </button>
+                                                {/* </div> */}
+            </DropdownItem>
+            {(candidate.stage_is_interview && candidate.is_qualified) && (
+            <DropdownItem>
+            {/* <div className="col-lg-6 p-1"> */}
+                                                    <button className='border-0 no-background' onClick={() => openFormModal(candidate.email, candidate.candidate_name, candidate.uuid, candidate.stage, 1)}>
+                                                    <span className="mr-1"><Plus size={12}/></span> Schedule Interview
+                                                    </button>
+                                                {/* </div> */}
+            </DropdownItem>
+            )}
+            <DropdownItem>
+            {/* <div className={(candidate.stage_is_interview && candidate.is_qualified)  ? "col-lg-6 p-1" : "col-lg-12 text-center"}> */}
+                                                <button className='border-0 no-background' onClick={() => openFormModal(candidate.email, candidate.uuid, null, 2)}>
+                                                    <span className="mr-1"><FileText size={12}/></span>Interview Record
+                                                </button>
+                                            {/* </div> */}
+            </DropdownItem>
+            {(candidate.stage_is_evaluation && candidate.is_qualified) && (
+            <DropdownItem>
+            
+                                                     {/* <div className="col-lg-6 p-1"> */}
+                                                        <button className='border-0 no-background' onClick={() => openEvaluateModal(candidate.uuid, candidate.stage, 1)}>
+                                                            <span className="mr-1"><Plus size={12}/></span>Evaluate
+                                                        </button>
+                                                     {/* </div> */}
+                                              
+            </DropdownItem>
+              )}  
+            <DropdownItem>
+            <button className='border-0 no-background' onClick={() => openEvaluateModal(candidate.uuid, null, 2)}>
+                                                       <span className="mr-1"><FileText size={12}/></span> View Evaluation
+                                                    </button>
+            </DropdownItem>
+            {candidate.is_qualified ?  <DropdownItem>
+           
+                                        {/* // <div className="col-lg-12"> */}
+                                            <button className='border-0 no-background' onClick={() => openDisqualifyModal(candidate)}>
+                                                <span className="mr-1">
+                                                   <span className="mr-1"><AlertTriangle size={12}/></span> Disqualify
+                                                </span>
+                                            </button>
+                                        {/* // </div> */}
+                                       
+                                    {/* ) : (
+                                        <button className='border-0 no-background' disabled={true}>
+                                        <span className="mr-1">
+                                         Disqualified
+                                        </span>
+                                    </button>
+                                     ) */}
+                                    
+           </DropdownItem> : null}
+           
+           {candidate.is_already_applied ? <DropdownItem><button className='border-0 no-background' onClick={() => openRecordModal(candidate.cnic_no)}>
+                                                       <span className="mr-1"><FileText size={12}/></span> Previous Applications
+                                                    </button> </DropdownItem> : null}
+        </DropdownMenu>
+      </Dropdown> 
+                                    </td>
                                     <td className="px-1">{candidate.job_title ? candidate.job_title : <Badge color="light-danger">N/A</Badge>}</td>
                                     
                                     <td className="text-nowrap px-1">{candidate.time_interval_title ? candidate.time_interval_title : <Badge color="danger">N/A</Badge>}</td>
@@ -298,78 +384,7 @@ const CandidateListTable = (props) => {
                                     )}
                                     </div>
                                     </td> */}
-                                    <td>
-                                    <Dropdown className="me-2"  isOpen={dropdownOpen[candidate.uuid]} toggle={() => toggleDropdown(candidate.uuid)} direction="start">
-                                {/* <DropdownToggle className="no-background m-0 px-0"> */}
-                                <div onClick={() => toggleDropdown(candidate.uuid)}><MoreVertical/></div>
-        {/* </DropdownToggle> */}
-        <DropdownMenu>
-            <DropdownItem>
-            <button className='border-0 no-background' onClick={() => openEmailModal(candidate.uuid, candidate.stage, 1)}>
-                                                       <span className="mr-1"><Mail size={12}/></span>Mail 
-                                                    </button>
-            </DropdownItem>
-            <DropdownItem>
-            {/* <div className={candidate.is_qualified ? "col-lg-6 p-1" : "col-lg-12 text-center"}> */}
-                                                    <button className='border-0 no-background' onClick={() => openEmailModal(candidate.uuid, null, 2)}>
-                                                    <span className="mr-1"><FileText size={12}/></span> Mail History
-                                                    </button>
-                                                {/* </div> */}
-            </DropdownItem>
-            {(candidate.stage_is_interview && candidate.is_qualified) && (
-            <DropdownItem>
-            {/* <div className="col-lg-6 p-1"> */}
-                                                    <button className='border-0 no-background' onClick={() => openFormModal(candidate.email, candidate.candidate_name, candidate.uuid, candidate.stage, 1)}>
-                                                    <span className="mr-1"><Plus size={12}/></span> Schedule Interview
-                                                    </button>
-                                                {/* </div> */}
-            </DropdownItem>
-            )}
-            <DropdownItem>
-            {/* <div className={(candidate.stage_is_interview && candidate.is_qualified)  ? "col-lg-6 p-1" : "col-lg-12 text-center"}> */}
-                                                <button className='border-0 no-background' onClick={() => openFormModal(candidate.email, candidate.uuid, null, 2)}>
-                                                    <span className="mr-1"><FileText size={12}/></span>Interview Record
-                                                </button>
-                                            {/* </div> */}
-            </DropdownItem>
-            {(candidate.stage_is_evaluation && candidate.is_qualified) && (
-            <DropdownItem>
-            
-                                                     {/* <div className="col-lg-6 p-1"> */}
-                                                        <button className='border-0 no-background' onClick={() => openEvaluateModal(candidate.uuid, candidate.stage, 1)}>
-                                                            <span className="mr-1"><Plus size={12}/></span>Evaluate
-                                                        </button>
-                                                     {/* </div> */}
-                                              
-            </DropdownItem>
-              )}  
-            <DropdownItem>
-            <button className='border-0 no-background' onClick={() => openEvaluateModal(candidate.uuid, null, 2)}>
-                                                       <span className="mr-1"><FileText size={12}/></span> View Evaluation
-                                                    </button>
-            </DropdownItem>
-            {candidate.is_qualified ?  <DropdownItem>
-           
-                                        {/* // <div className="col-lg-12"> */}
-                                            <button className='border-0 no-background' onClick={() => openDisqualifyModal(candidate)}>
-                                                <span className="mr-1">
-                                                   <span className="mr-1"><AlertTriangle size={12}/></span> Disqualify
-                                                </span>
-                                            </button>
-                                        {/* // </div> */}
-                                       
-                                    {/* ) : (
-                                        <button className='border-0 no-background' disabled={true}>
-                                        <span className="mr-1">
-                                         Disqualified
-                                        </span>
-                                    </button>
-                                     ) */}
                                     
-           </DropdownItem> : null}
-        </DropdownMenu>
-      </Dropdown> 
-                                    </td>
                                     <td className="px-1">
                                         <a className="btn btn-primary btn-sm" target="_blank" href={`${process.env.REACT_APP_PUBLIC_URL}${candidate.resume}`}><File/></a>
                                     </td>
@@ -426,6 +441,18 @@ const CandidateListTable = (props) => {
                     <Disqualify data={current_cand} CallBack={CallBack} />
                 </ModalBody>
             </Modal>  
+            <Offcanvas isOpen={recordModal} toggle={() => setRecordModal(!recordModal)} direction="end">
+            <OffcanvasHeader className='bg-transparent' toggle={() => setRecordModal(!recordModal)} />
+            <OffcanvasBody className='px-sm-5 mx-50 pb-5'>
+            <PreviousRecord cnic={cand_cnic} />
+            </OffcanvasBody>
+            </Offcanvas>
+            {/* <Modal isOpen={recordModal} toggle={() => setRecordModal(!recordModal)} className='modal-dialog-centered modal-xl'>
+                <ModalHeader className='bg-transparent' toggle={() => setRecordModal(!recordModal)}></ModalHeader>
+                <ModalBody className='px-sm-5 mx-50 pb-5'>
+                    <PreviousRecord cnic={cand_cnic} />
+                </ModalBody>
+            </Modal>   */}
         </>
     )
     

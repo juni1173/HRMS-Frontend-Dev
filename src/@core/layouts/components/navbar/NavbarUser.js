@@ -6,7 +6,7 @@ import UserDropdown from './UserDropdown'
 import { useHistory } from 'react-router-dom'
 
 // ** Third Party Components
-import { Sun, Moon, Home, Archive, Grid } from 'react-feather'
+import { Sun, Moon, Home, Archive, Grid, Video, Mail } from 'react-feather'
 
 // ** Reactstrap Imports
 import { NavItem, NavLink } from 'reactstrap'
@@ -56,10 +56,13 @@ const NavbarUser = props => {
               {/* <img width={50} height={50} src={orgImgPath !== null ? orgImgPath : themeConfig.app.appLogoImage} alt='logo' /> */}
         {/* </div> */}
         <div className='nav navbar-nav align-items-center ms-auto'>
+        
   {/* <Building className='mr-2'/> */}
   <img src={Building} alt="Organization" className='mr-2'/>
   <h6 className='mr-2 my-0'>{(JSON.parse(localStorage.getItem('organization'))) ? JSON.parse(localStorage.getItem('organization')).name : themeConfig.app.appName}</h6>
   <Grid className="mx-2" onClick={() => history.push('/apps')} />
+  <Video className="mx-2" onClick={() => history.push('/zoom')} />
+  <Mail className="mx-2" onClick={() => history.push('/email/panel')} />
   <UserDropdown />
 </div>
     </Fragment>

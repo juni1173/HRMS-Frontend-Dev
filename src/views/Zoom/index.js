@@ -36,11 +36,11 @@ const index = () => {
           <>
             <Row>
               <Col md='12'>
-                <Card>
-                  <CardBody>
+                {/* <Card>
+                  <CardBody> */}
                     <MeetingList accessToken={accessToken} />
-                  </CardBody>
-                </Card>
+                  {/* </CardBody>
+                </Card> */}
               </Col>
             </Row>
             </>

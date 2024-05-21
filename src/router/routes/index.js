@@ -366,6 +366,25 @@ const Routes = [
     path: '/zoommeeting/:id/:pass/:token/:role',
     component: lazy(() => import('../../views/Zoom/Components/JoinMeeting')),
     layout:'BlankLayout'
+  },
+  {
+    path: '/requisition',
+    component: lazy(() => import('../../views/Requisition/index'))
+  },
+  {
+    path: '/hr/requisition',
+    component: lazy(() => import('../../views/Requisition/hrcomponents/index'))
+  },
+  {
+    path: '/email/connect',
+    component: lazy(() => import('../../views/EmailIntegrations/index'))
+  },
+  {
+    path: '/email/panel',
+    exact: true,
+    appLayout: true,
+    className: 'email-application',
+    component: lazy(() => import('../../views/EmailIntegrations/EmailComponents/Panel'))
   }
 ]
 

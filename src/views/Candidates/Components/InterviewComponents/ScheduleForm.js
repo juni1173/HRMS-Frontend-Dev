@@ -394,6 +394,10 @@ const ScheduleForm = ({ email, name, uuid, stage_id, CallBack }) => {
                             Interview  Mode
                         </Label>
                         <p><b>{interviewData.mode_title ? interviewData.mode_title : 'N/A'}</b></p></div>
+                        <div className='col-lg-6'><Label>
+                            Interview  Medium
+                        </Label>
+                        <p><b>{interviewData.interview_medium_title ? interviewData.interview_medium_title : 'N/A'}</b></p></div>
                     <div className='col-lg-6'> 
                         <Label>
                             Meeting Link
