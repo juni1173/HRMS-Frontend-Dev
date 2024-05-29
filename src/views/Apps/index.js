@@ -1,6 +1,6 @@
 import React, { useEffect, useState} from 'react'
 import { Card, CardBody, CardTitle, Row, Col } from 'reactstrap'
-import { Home, User, Book, Layers, Coffee, Users, Clock, Briefcase, Circle, BookOpen, CheckSquare, Bookmark, Settings, Trello, ArrowRight, FilePlus } from 'react-feather'
+import { Home, User, Book, Layers, Coffee, Users, Clock, Briefcase, Circle, BookOpen, CheckSquare, Bookmark, Settings, Trello, ArrowRight, FilePlus, Link } from 'react-feather'
 import { useHistory } from 'react-router-dom'
 
 const menuItems = [
@@ -115,6 +115,12 @@ const menuItems = [
           title: 'Requisition',
           icon: <FilePlus size={20} />,
           navLink: '/hr/requisition'
+        },
+        {
+          id: 'nav-integerations',
+          title: 'Integerations',
+          icon: <Link size={20} />,
+          navLink: '/integerations'
         }
       //   {
       //     id: 'nav-tickets',

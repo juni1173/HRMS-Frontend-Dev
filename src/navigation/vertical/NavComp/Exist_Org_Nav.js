@@ -264,6 +264,12 @@ let nav = []
     title: 'Reports',
     icon: <Trello size={12} />,
     navLink: '/reports'
+},
+{
+  id: 'nav-workmodels',
+  title: 'Work Models',
+  icon: <Trello size={12} />,
+  navLink: '/workmodels'
 }
 // {
 //   id: 'nav-dashboard',
