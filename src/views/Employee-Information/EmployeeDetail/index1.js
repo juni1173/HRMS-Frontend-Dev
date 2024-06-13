@@ -15,6 +15,8 @@ import UserTabs from './UserTabs'
 
 // ** Styles
 import '@styles/react/apps/app-users.scss'
+import '@styles/react/pages/page-profile.scss'
+import ProfileHeader from './ProfileHeader'
 
 const UserView = () => {
     const Api = apiHelper()
@@ -77,14 +79,12 @@ const CallBack = () => {
   return (
     <div className='app-user-view'>
         {!loading ?  <Row>
-        <Col xl='4' lg='5' xs={{ order: 1 }} md={{ order: 0, size: 5 }}>
-          <PersonalDetail empData={empData} CallBack={CallBack}/>
-          {/* <PlanCard /> */}
-        </Col>
-        <Col xl='8' lg='7' xs={{ order: 0 }} md={{ order: 1, size: 7 }}>
-          <UserTabs active={active} toggleTab={toggleTab} empData={empData} CallBack={CallBack} url_params={url_params}/>
-        </Col>
-      </Row> : <Spinner type='grow' color='primary' /> }
+          <div id='user-profile'>
+            <Col md='12'>
+              <ProfileHeader active={active} toggleTab={toggleTab} empData={empData} CallBack={CallBack} url_params={url_params}/>
+            </Col>
+          </div>
+      </Row> : <div  className='text-center'><Spinner type='grow' color='primary'/></div> }
     </div>
   )
 }

@@ -1,9 +1,11 @@
 import { Fragment, useState} from "react"
-import { Edit, Plus, XCircle, Check} from "react-feather"
+import { Edit, Plus, XCircle, Check, Folder} from "react-feather"
 import {Modal, ModalBody, ModalHeader, Card, CardBody, CardTitle, Spinner, Table, Badge, Button, Input} from "reactstrap"
 import CreateProjectRole from "../CreateEmployeeComponents/CreateProjectRole"
 import apiHelper from "../../Helpers/ApiHelper"
 import EmployeeHelper from "../../Helpers/EmployeeHelper"
+import { IoAddCircleOutline  } from "react-icons/io5"
+import { AiFillProject } from "react-icons/ai"
 // import user_blank  from "../../../assets/images/avatars/user_blank.png"
 const ProjectDetail = ({empData, CallBack}) => {
     const Api = apiHelper()
@@ -55,30 +57,30 @@ const ProjectDetail = ({empData, CallBack}) => {
     return (
         <Card className="emplyee_project_role">
         <CardTitle className= 'mb-0'>
-                    <div className="row bg-blue">
-                        <div className="col-lg-4 col-md-4 col-sm-4"></div>
-                        <div className='col-lg-4 col-md-4 col-sm-4'>
-                            <h4 color='white' className="text-center">Project Roles</h4>
+                    <div className="d-flex justify-content-between bg-lightgrey">
+                        <div className="d-flex">
+                            <AiFillProject  color="#315180" size={'18px'}/> <h4>Project Roles</h4>
                         </div>
-                        <div className="col-lg-4 col-md-4 col-sm-4">
+                        <div>
                             {Api.role === 'admin' && (
                                 <button
                                     className="border-0 no-background float-right"
                                     title="Edit Employee"
+                                    style={{fontSize:'14px'}}
                                     onClick={() => setCreateModal(true)}
                                     >
-                                    <Plus color="white"/>
+                                    <IoAddCircleOutline  color="#315180" size={'18px'}/> New
                                 </button>
                             )}
-                            
                         </div>
                     </div>
+                    
         </CardTitle>
         {
         Object.values(empData.employee_project_roles).length > 0 ? (
         <>
             <CardBody>
-                    <Table bordered striped responsive>
+                    <Table responsive>
                         <thead>
                             <tr>
                                 <th>Project</th>

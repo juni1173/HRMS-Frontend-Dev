@@ -1,8 +1,10 @@
 import { Fragment, useState} from "react"
-import { Edit, Plus, XCircle, Check} from "react-feather"
+import { Edit, Plus, XCircle, Check, Briefcase} from "react-feather"
 import {Modal, ModalBody, ModalHeader, Card, CardBody, CardTitle, Spinner, Table, Badge, Button, Input} from "reactstrap"
 import UpdateOfficeDetail from "../AddEmployee/OfficeDetail/UpdateOfficeDetail"
 import apiHelper from "../../Helpers/ApiHelper"
+import { IoBriefcase } from "react-icons/io5"
+import { RiEditBoxFill } from "react-icons/ri"
 // import user_blank  from "../../../assets/images/avatars/user_blank.png"
 const OfficeDetail = ({empData, CallBack}) => {
     const Api = apiHelper()
@@ -11,49 +13,92 @@ const OfficeDetail = ({empData, CallBack}) => {
     return (
         <Card className="emplyee_office_detail">
         <CardTitle>
-                    <div className="row bg-blue">
-                        <div className="col-lg-4 col-md-4 col-sm-4"></div>
-                        <div className='col-lg-4 col-md-4 col-sm-4'>
-                            <h4 color='white' className="text-center">Office Detail</h4>
+                    <div className="d-flex justify-content-between bg-lightgrey">
+                        <div className="d-flex">
+                            <IoBriefcase color="#315180" size={'18px'}/> <h4>Office Detail</h4>
                         </div>
-                        <div className="col-lg-4 col-md-4 col-sm-4">
-                            {Api.role === 'admin' && (
+                        <div>
+                        {Api.role === 'admin' && (
                                 <button
                                 className="border-0 no-background float-right"
                                 title="Edit Employee"
+                                style={{fontSize:'16px'}}
                                 onClick={() => setEditModal(true)}
                                 >
-                                <Edit color="white"/>
+                                <RiEditBoxFill color="#315180" size={'18px'}/> update
                             </button>
                             )}
-                            
                         </div>
                     </div>
+                    
         </CardTitle>
         {
         Object.values(empData.employee).length > 0 ? (
         <>
-            <CardBody>
-                
-                    <div className="row">
-                        <div className='col-lg-6 col-md-6 col-sm-6'>
-                            <p className='label'>Employment type: &nbsp;  &nbsp;<strong>{empData.employee.employee_type_title ? empData.employee.employee_type_title : 'N/A'}</strong></p>
-                            <p className='label'>Staff Classification: &nbsp;  &nbsp; <strong>{empData.employee.staff_classification_title ? empData.employee.staff_classification_title : 'N/A'}</strong></p>
-                            <p className='label'>Department: &nbsp;  &nbsp; <strong>{empData.employee.department_title ? empData.employee.department_title : 'N/A'}</strong></p>
-                            <p className='label'>Position: &nbsp;  &nbsp; <strong>{empData.employee.position_title ? empData.employee.position_title : 'N/A'}</strong></p>
-                            <p className='label'>Official Email: &nbsp;  &nbsp; <strong>{empData.employee.official_email ? empData.employee.official_email : 'N/A'}</strong></p>
-                            <p className='label'>Leaving Reason: &nbsp;  &nbsp; <strong>{empData.employee.leaving_reason ? empData.employee.leaving_reason : 'N/A'}</strong></p>
-                    </div>
-                        <div className='col-lg-6 col-md-6 col-sm-6'>
-                        <p className='label'>Employee Code: &nbsp;  &nbsp; <strong>{empData.employee.emp_code ? empData.employee.emp_code : 'N/A'}</strong></p>
-                            <p className='label'>Official Skype: &nbsp;  &nbsp; <strong>{empData.employee.skype ? empData.employee.skype : 'N/A'}</strong></p>
-                            <p className='label'>Joining Date: &nbsp;  &nbsp; <strong>{empData.employee.joining_date ? empData.employee.joining_date : 'N/A'}</strong></p>
-                            <p className='label'>Hiring Comment: &nbsp;  &nbsp; <strong>{empData.employee.hiring_comment ? empData.employee.hiring_comment : 'N/A'} </strong></p>
-                            <p className='label'>Leaving Date: &nbsp;  &nbsp;<strong>{empData.employee.leaving_date ? empData.employee.leaving_date : 'N/A'}</strong></p>
-                            <p className='label'>Starting Salary: &nbsp;  &nbsp; <strong>{empData.employee.starting_salary ? empData.employee.starting_salary : 'N/A'}</strong></p>
-                            <p className='label'>Current Salary: &nbsp;  &nbsp; <strong>{empData.employee.current_salary ? empData.employee.current_salary : 'N/A'}</strong></p>
-                        </div>
-                    </div>
+            <CardBody className="p-0">
+            <Table responsive className="detail-table">
+                            <thead>
+                                <tr>
+                                <th>Type</th>
+                                <th>Staff Classification</th>
+                                <th>Department</th>
+                                <th>Position</th>
+                                <th>Code</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                <td>
+                                    {empData.employee.employee_type_title ? empData.employee.employee_type_title : 'N/A'}
+                                </td>
+                                <td>{empData.employee.staff_classification_title ? empData.employee.staff_classification_title : 'N/A'}</td>
+                                    <td>{empData.employee.department_title ? empData.employee.department_title : 'N/A'}</td>
+                                    <td>{empData.employee.position_title ? empData.employee.position_title : 'N/A'}</td>
+                                    <td>{empData.employee.emp_code ? empData.employee.emp_code : 'N/A'}</td>
+                                </tr>
+                            </tbody>
+                        </Table>
+                        <Table responsive className="detail-table">
+                            <thead>
+                                <tr>
+                                <th>Joining</th>
+                                <th>Leaving date</th>
+                                <th>Hirring Comment</th>
+                                <th>Starting Salary</th>
+                                <th>Current Salary</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                <td>
+                                    {empData.employee.joining_date ? empData.employee.joining_date : 'N/A'}
+                                </td>
+                                <td>{empData.employee.leaving_date ? empData.employee.leaving_date : 'N/A'}</td>
+                                    <td>{empData.employee.hiring_comment ? empData.employee.hiring_comment : 'N/A'}</td>
+                                    <td>{empData.employee.starting_salary ? empData.employee.starting_salary : 'N/A'}</td>
+                                    <td>{empData.employee.current_salary ? empData.employee.current_salary : 'N/A'}</td>
+                                </tr>
+                            </tbody>
+                        </Table>
+                        <Table responsive className="detail-table">
+                            <thead>
+                                <tr>
+                                <th>Official Email</th>
+                                <th>Leaving Reason</th>
+                                <th>Skype</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                <td>
+                                    {empData.employee.official_email ? empData.employee.official_email : 'N/A'}
+                                </td>
+                                <td>{empData.employee.leaving_reason ? empData.employee.leaving_reason : 'N/A'}</td>
+                                    
+                                    <td>{empData.employee.skype ? empData.employee.skype : 'N/A'}</td>
+                                </tr>
+                            </tbody>
+                        </Table>
             </CardBody>
         </>
         ) : (

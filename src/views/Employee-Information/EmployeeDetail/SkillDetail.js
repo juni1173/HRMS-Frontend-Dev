@@ -4,9 +4,12 @@ import {Modal, ModalBody, ModalHeader, Card, CardBody, CardTitle, Spinner, Table
 import EmployeeHelper from "../../Helpers/EmployeeHelper"
 import CreateEmpSkill from "../CreateEmployeeComponents/CreateEmpSkill"
 import UpdateEmpSkill from "../UpdateEmployeeComponents/UpdateEmpSkill"
+import { IoAddCircleOutline, IoCodeWorkingSharp  } from "react-icons/io5"
+import { RiEditBoxFill, RiDeleteBin5Fill } from "react-icons/ri"
+import apiHelper from "../../Helpers/ApiHelper"
 // import user_blank  from "../../../assets/images/avatars/user_blank.png"
 const SkillDetail = ({empData, CallBack, url_params}) => {
-    // const Api = apiHelper()
+    const Api = apiHelper()
     const EmpHelper = EmployeeHelper()
     const [createModal, setCreateModal] = useState(false)
     const [editModal, setEditModal] = useState(false)
@@ -15,26 +18,28 @@ const SkillDetail = ({empData, CallBack, url_params}) => {
       
         <Card className="emplyee_Skills_detail">
         <CardTitle>
-                    <div className="row bg-blue">
-                        <div className="col-lg-4 col-md-4 col-sm-4"></div>
-                        <div className='col-lg-4 col-md-4 col-sm-4'>
-                            <h4 color='white' className="text-center">Skills Detail</h4>
-                        </div>
-                        <div className="col-lg-4 col-md-4 col-sm-4">
-                            <button
-                                className="border-0 no-background float-right"
-                                title="Edit Employee"
-                                onClick={() => setCreateModal(true)}
-                                >
-                                <Plus color="white"/>
-                            </button>
-                        </div>
-                    </div>
+                        <div className="d-flex justify-content-between bg-lightgrey">
+                                <div className="d-flex">
+                                    <IoCodeWorkingSharp color="#315180" size={'18px'}/> <h4>Skills Details</h4>
+                                </div>
+                                <div>
+                                    {Api.role === 'admin' && (
+                                        <button
+                                            className="border-0 no-background float-right"
+                                            title="Add Skills detail"
+                                            style={{fontSize:'14px'}}
+                                            onClick={() => setCreateModal(true)}
+                                            >
+                                            <IoAddCircleOutline  color="#315180" size={'18px'}/> New
+                                        </button>
+                                    )}
+                                </div>
+                            </div>
         </CardTitle>
         {Object.values(empData.employee_skills).length > 0 ? (
         <>
             <CardBody>
-                    <Table bordered striped responsive>
+                    <Table responsive>
                         <thead>
                             <tr>
                                 <th>employee_name</th>
@@ -62,7 +67,7 @@ const SkillDetail = ({empData, CallBack, url_params}) => {
                                                 setEditModal(true)
                                             }}
                                         >
-                                            <Edit color="orange" />
+                                            <RiEditBoxFill color="orange" size="20px"/>
                                         </button>
                                         </div>
                                         <div className="col-lg-6">
@@ -70,7 +75,7 @@ const SkillDetail = ({empData, CallBack, url_params}) => {
                                             className="border-0"
                                             onClick={() => EmpHelper.DeleteEmpSkill(url_params.uuid, skill.id).then(() => { CallBack() })}
                                         >
-                                            <XCircle color="red" />
+                                            <RiDeleteBin5Fill color="red" size="20px"/>
                                         </button>
                                         </div>
                                     </div>
