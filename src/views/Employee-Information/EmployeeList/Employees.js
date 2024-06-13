@@ -1,6 +1,6 @@
 import React, { Fragment, useEffect, useState } from "react"
-import {  UserMinus, Eye, Search, UserCheck, Settings, FileText, MoreVertical} from "react-feather"
-import {Container, Row, Card, CardBody, CardTitle, Badge, InputGroup, Input, InputGroupText, Col, Spinner, Button, Offcanvas, OffcanvasHeader, OffcanvasBody,  Dropdown, DropdownToggle, DropdownMenu, DropdownItem} from "reactstrap"
+import {  UserMinus, Eye, Search, UserCheck, Settings, FileText, MoreVertical, Compass} from "react-feather"
+import {Container, Row, Card, CardBody, CardTitle, Badge, InputGroup, Input, InputGroupText, Col, Spinner, Button, Offcanvas, OffcanvasHeader, OffcanvasBody,  Dropdown, DropdownToggle, DropdownMenu, DropdownItem, Modal, ModalBody, ModalHeader} from "reactstrap"
 import user_blank  from "../../../assets/images/avatars/user_blank.png"
 import apiHelper from "../../Helpers/ApiHelper"
 import SearchHelper from "../../Helpers/SearchHelper/SearchByObject"
@@ -11,6 +11,7 @@ import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import ESS from '../ESS-Scripts/index'
 import Preview from "../../emp_resume/Preview"
+import AssignModel from "../../WorkModels/WorkingModelAssign/Assign"
 const Employees = ({ employeeList, CallBack, type }) => {
     
     const Api = apiHelper()
@@ -28,6 +29,8 @@ const Employees = ({ employeeList, CallBack, type }) => {
     const [canvas, setcanvas] = useState('')
     const [empID, setEmpID] = useState('')
     const [dropdownOpen, setDropdownOpen] = useState({})
+    const [modal, setModal] = useState(false)
+    const toggle = () => setModal(!modal)
     const toggleDropdown = (itemId) => {
       setDropdownOpen((prevState) => ({
         ...prevState,
@@ -88,6 +91,10 @@ const Employees = ({ employeeList, CallBack, type }) => {
         setCanvasPlacement('end')
         setCanvasOpen(!canvasOpen)
       }
+    const handleworkingmodel = (id) => {
+        setEmpID(id)
+        toggle()
+    }
     const ESSToggle = (id, canvasvalue) => {
         console.log(canvas)
         if (canvasvalue === 'ESS') {
@@ -292,15 +299,24 @@ const Employees = ({ employeeList, CallBack, type }) => {
                                     <span className="mr-1"><UserCheck size={12}/></span> Activate
                                 </button>
                                 )}</DropdownItem>
-         <DropdownItem>
-            {type === 'active' ?  <button
+      {type === 'active' ? <DropdownItem>
+              <button
                                         className="border-0 no-background"
                                         title="Deactivate Employee"
                                         onClick={() => removeAction(item.uuid)}
                                         >
                                         <span className="mr-1"><UserMinus size={12}/></span>Inactive
-                                    </button> : null}
-         </DropdownItem>
+                                    </button> 
+         </DropdownItem> : null}
+         {type === 'active' ? <DropdownItem>
+              <button
+                                        className="border-0 no-background"
+                                        title="Set Working Model"
+                                        onClick={() => handleworkingmodel(item.id)}
+                                        >
+                                        <span className="mr-1"><UserMinus size={12}/></span>Set Working Model
+                                    </button> 
+         </DropdownItem> : null}
          <DropdownItem>
          <button
                                         className="border-0 no-background text-nowrap"
@@ -384,6 +400,12 @@ const Employees = ({ employeeList, CallBack, type }) => {
             {canvas === 'Resume' ? <Preview name={name} location={location} mobile={mobile} email={email} summary={summary} accomplishments={accomplishments} experiences={experiences} educations={educations}/>  : null}
           </OffcanvasBody>
         </Offcanvas>
+        <Modal isOpen={modal} toggle={toggle}>
+        <ModalHeader toggle={toggle}>Modal title</ModalHeader>
+        <ModalBody>
+            <AssignModel employee={empID} CallBack={toggle}/>
+        </ModalBody>
+        </Modal>
     </Fragment>
    )
 }

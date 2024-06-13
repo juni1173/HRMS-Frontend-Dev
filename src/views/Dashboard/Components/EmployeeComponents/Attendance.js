@@ -6,8 +6,6 @@ import Flatpickr from 'react-flatpickr'
 import '@styles/react/libs/flatpickr/flatpickr.scss'
 import { Clock } from 'react-feather'
 import EmployeeHelper from '../../../Helpers/EmployeeHelper'
-import Calendar from 'react-calendar'
-import 'react-calendar/dist/Calendar.css'
 const Attendance = ({atndceData, CallBack}) => {
     const Api = apiHelper()
     const EmpHelper = EmployeeHelper()
@@ -126,55 +124,71 @@ const Attendance = ({atndceData, CallBack}) => {
             </>
         )
     }
-    const transformedEvents = (atndceData && Object.values(atndceData).length > 0) ? atndceData
-  .filter(item => item.check_in && item.check_out) // Filter out items with missing check-in or check-out
-  .map(item => ({
-    date: new Date(item.date), 
-    title: `Check In: ${item.check_in}, Check Out: ${item.check_out}`
-})) : []
-
+    
 
   return (
     <Fragment>
         <Card>
-                <CardBody>
-                    <h3 className='mb-2'>Attendance</h3>
-                    <Row className='mb-2'>
-                        <Col className='col-6'>
-                            <Button className='btn btn-success' onClick={() => {
-                                setBtnStatus('check_in')
-                                setCenteredModal(!centeredModal)
+            <CardBody>
+                <h3 className='mb-2'>Attendance</h3>
+                <Row className='mb-2'>
+                    <Col className='col-6'>
+                        <Button className='btn btn-success' onClick={() => {
+                            setBtnStatus('check_in')
+                            setCenteredModal(!centeredModal)
                             }}>
-                                Check In
-                            </Button>
-                        </Col>
-                        <Col className='col-6'>
-                            <Button className='btn btn-danger float-right' onClick={() => {
-                                setBtnStatus('check_out')
-                                setCenteredModal(!centeredModal)
-                            }}>
-                                Check Out
-                            </Button>
-                        </Col>
-                    </Row>
+                            Check In
+                        </Button>
+                    </Col>
+                    <Col className='col-6'>
+                        <Button className='btn btn-danger float-right' onClick={() => {
+                            setBtnStatus('check_out')
+                            setCenteredModal(!centeredModal)
+                        }}>
+                            Check Out
+                        </Button>
+                    </Col>
+                </Row>
+                    <Table bordered striped responsive>
+                    <thead className='table-dark text-center'>
+                        <tr>
+                        <th>Date</th>
+                        <th>Type</th>
+                        <th>Check In</th>
+                        <th>Check Out</th>
+                        </tr>
+                    </thead>
                     {!loading ? (
-                     <Calendar
-                     onChange={setDate}
-                     value={date}
-                     tileContent={({ date, view }) => {
-                         if (view === 'month') {
-                             const eventForDate = transformedEvents.find(event => {
-                                 const eventDate = new Date(event.date)
-                                 return eventDate.getFullYear() === date.getFullYear() &&
-                                     eventDate.getMonth() === date.getMonth() &&
-                                     eventDate.getDate() === date.getDate()
-                             })
-                             return eventForDate ? <p>{eventForDate.title}</p> : null
-                         }
-                     }}
-                 />) : null }
-                </CardBody>
-            </Card>
+                    (atndceData && Object.values(atndceData).length > 0) ? (
+                        atndceData.map((item, key) => (
+                            <tbody key={key}>
+                                <tr>
+                                <td className='nowrap'>{item.date}</td>
+                                <td>{item.attendance_type}</td>
+                                <td>{item.check_in}</td>
+                                <td>{item.check_out}</td>
+                                </tr>
+                            </tbody>
+                        ))
+                    ) : (
+                        <tbody>
+                            <tr>
+                            <td colSpan={4}><div className='text-center'>No Data Found</div></td>
+                            </tr>
+                        </tbody>
+                    )
+                    ) : (
+                        <tbody>
+                            <tr>
+                            <td colSpan={4}><div className='text-center'><Spinner /></div></td>
+                            </tr>
+                        </tbody>
+                            
+                    )
+                    }
+                </Table>
+            </CardBody>
+        </Card>
         <Modal isOpen={centeredModal} toggle={() => setCenteredModal(!centeredModal)} className='modal-dialog-centered modal-lg'>
           <ModalHeader toggle={() => setCenteredModal(!centeredModal)}></ModalHeader>
           <ModalBody>

@@ -22,20 +22,19 @@ const menuItems = [
                 navLink: '/job-description'
               },
               {
+                id: 'nav-candidates',
+                title: 'Candidates',
+                icon: <Users size={20} />,
+                navLink: '/candidates'
+              },
+              {
                 id: 'nav-interview-questions',
                 title: 'Interview Questions',
                 icon: <Paperclip size={20} />,
                 navLink: '/questions'
-              },
-                {
-        id: 'nav-candidates',
-        title: 'Candidates',
-        icon: <Users size={20} />,
-        navLink: '/candidates'
-      }
+              }
+                
     ] 
-
-
 const Menu = () => {
   const history = useHistory()
   const [hoveredItem, setHoveredItem] = useState(null)

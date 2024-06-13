@@ -23,12 +23,8 @@ const ComTabs = () => {
     }
 
     return (
-        <Fragment>
-            <Row>
-            <Card className='bg-mirror'>
-                <CardBody>
-                    <div className='configuration_panel'>
-                        <Nav tabs className='nav-horizontal'>
+                    <div className='nav-vertical configuration_panel bg-white'>
+                        <Nav tabs className='nav-left mt-2'>
                             {[1, 2].map((tabId) => (
                                 <NavItem key={tabId}>
                                     <NavLink active={active === tabId.toString()} onClick={() => toggle(tabId.toString())}>
@@ -37,16 +33,17 @@ const ComTabs = () => {
                                 </NavItem>
                             ))}
                         </Nav>
-                    </div>
-                    <TabContent activeTab={active}>
+                    
+                    <TabContent activeTab={active} className="mt-2">
                         <TabPane tabId={active}>
                             <Suspense fallback={<div>Loading...</div>}>{renderComponent()}</Suspense>
                         </TabPane>
                     </TabContent>
-                </CardBody>
-            </Card>
-            </Row>
-        </Fragment>
+                    </div>
+        //         </CardBody>
+        //     </Card>
+        //     </Row>
+        // </Fragment>
     )
 }
 

@@ -1,7 +1,12 @@
 import React, { Fragment, useState, lazy, Suspense, useEffect} from 'react'
-import { Card, CardBody, TabContent, TabPane, Nav, NavItem, NavLink } from 'reactstrap'
-import { HelpCircle } from 'react-feather'
+import { Card, CardBody, TabContent, TabPane, Nav, NavItem, NavLink, Row, Col} from 'reactstrap'
+// import { Feather, HelpCircle } from 'react-feather'
 import apiHelper from '../Helpers/ApiHelper'
+import { CgGym } from "react-icons/cg"
+import { FaHandHoldingMedical } from "react-icons/fa"
+import { MdAttachMoney } from "react-icons/md"
+import { AiTwotoneFund } from "react-icons/ai"
+import * as Icon from 'react-feather'
 // Lazy-loaded components
 const Gym = lazy(() => import('./Components/Gym'))
 const Medical = lazy(() => import('./Components/Medical'))
@@ -86,33 +91,72 @@ useEffect(() => {
 
   return (
     <Fragment>
-      <Card className='bg-mirror'>
-        <CardBody>
-          <div className='nav-vertical overflow-inherit configuration_panel'>
-            <Nav tabs className='nav-left'>
-              <NavItem>
+    {/* <Card>
+      <CardBody style={{padding:'0.5rem 1.5rem'}}> */}
+        <Row className='mb-2'>
+          {/* <Col md='3'>
+          <NavItem>
                 <h3 className='brand-text'>
                   {' '}
                   <HelpCircle /> ESS
                 </h3>
               </NavItem>
+          </Col> */}
+          <Col md='12'>
+          <Nav className='justify-content-center' tabs>
               {[1, 2, 3, 4, 5, 6].map((tabId) => (
                 <NavItem key={tabId}>
                   <NavLink active={active === tabId.toString()} onClick={() => toggle(tabId.toString())}>
-                    {tabId === 1 ? 'Gym' : tabId === 2 ? 'Medical' : tabId === 3 ? 'Leaves' : tabId === 4 ? 'Provident Fund' : tabId === 5 ? 'Loan' : 'Compensatory'}
+                    {tabId === 1 ? <> <CgGym size={20}/>Gym </> : tabId === 2 ? <><FaHandHoldingMedical size={20}/>Medical</> : tabId === 3 ? <><Icon.Calendar/>Leaves</> : tabId === 4 ? <><Icon.DollarSign size={20}/>Provident Fund</> : tabId === 5 ? <><MdAttachMoney size={20}/>Loan</> : <><Icon.Aperture/> Compensatory</>}
                   </NavLink>
                 </NavItem>
               ))}
-            </Nav>
-            <TabContent activeTab={active}>
+          </Nav>
+
+          </Col>
+          <Col md='3'>
+            {/* <Button color='gradient-secondary'>Secondary</Button> */}
+          </Col>
+        </Row>
+      {/* </CardBody>
+    </Card> */}
+    
+    <TabContent activeTab={active} className='bg-white p-2'>
               <TabPane tabId={active}>
                 <Suspense fallback={<div>Loading...</div>}>{renderComponent()}</Suspense>
               </TabPane>
             </TabContent>
-          </div>
-        </CardBody>
-      </Card>
-    </Fragment>
+    
+</Fragment>
+
+    // <Fragment>
+    //   <Card className='bg-mirror'>
+    //     <CardBody>
+    //       <div className='nav-vertical overflow-inherit configuration_panel'>
+    //         <Nav tabs className='nav-left'>
+    //           <NavItem>
+    //             <h3 className='brand-text'>
+    //               {' '}
+    //               <HelpCircle /> ESS
+    //             </h3>
+    //           </NavItem>
+    //           {[1, 2, 3, 4, 5, 6].map((tabId) => (
+    //             <NavItem key={tabId}>
+    //               <NavLink active={active === tabId.toString()} onClick={() => toggle(tabId.toString())}>
+    //                 {tabId === 1 ? 'Gym' : tabId === 2 ? 'Medical' : tabId === 3 ? 'Leaves' : tabId === 4 ? 'Provident Fund' : tabId === 5 ? 'Loan' : 'Compensatory'}
+    //               </NavLink>
+    //             </NavItem>
+    //           ))}
+    //         </Nav>
+    //         <TabContent activeTab={active}>
+    //           <TabPane tabId={active}>
+    //             <Suspense fallback={<div>Loading...</div>}>{renderComponent()}</Suspense>
+    //           </TabPane>
+    //         </TabContent>
+    //       </div>
+    //     </CardBody>
+    //   </Card>
+    // </Fragment>
   )
 }
 

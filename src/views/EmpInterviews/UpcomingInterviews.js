@@ -120,8 +120,11 @@ const evaluationModal = (active) => {
   {interview.status === 3 ? <Col md="4" className='mb-2'>
     <Button color='success' onClick={() => onCompleteInterview(interview.candidate_job_uuid, interview.id)}>Complete Interview</Button> 
    </Col> : null}
-   {interview.status === 4 ? <Col md="4" className='mb-2'>
+   {interview.status === 4 && !interview.is_completed && !interview.is_evaluation ? <Col md="4" className='mb-2'>
     <Button color='success' onClick={() => openEvaluateModal(interview.candidate_job_uuid, interview.stage, 1)}>Evaluate Interview</Button> 
+   </Col> : null}
+   {interview.status === 4 && interview.is_completed && interview.is_evaluation ? <Col md="4" className='mb-2'>
+    <Button color='success' onClick={() => openEvaluateModal(interview.candidate_job_uuid, interview.stage, 1)}>View Evaluation</Button> 
    </Col> : null}
   {/* <Col md="4">
     Meeting Medium: <Badge color="secondary">{interview.interview_medium}</Badge>

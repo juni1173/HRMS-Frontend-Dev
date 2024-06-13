@@ -1,4 +1,4 @@
-import { Home, CheckSquare, Bookmark, HelpCircle, Book, Clock, Trello, Paperclip } from 'react-feather'
+import { Home, CheckSquare, Bookmark, HelpCircle, Book, Clock, Trello, Paperclip, Video } from 'react-feather'
 // const checkVisibility = (list, apiList) => {
   
 //   for (let i = 0; i < apiList.length; i++) {

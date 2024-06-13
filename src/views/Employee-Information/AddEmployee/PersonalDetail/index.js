@@ -1,8 +1,8 @@
 import {Fragment, useState} from "react" 
-import {Label, Row, Col, Input, Form, Badge } from "reactstrap" 
+import {Label, Row, Col, Input, Form, Badge, Card, CardBody, CardHeader, CardFooter, CardTitle } from "reactstrap" 
 import Select from 'react-select'
 import { useForm, Controller } from 'react-hook-form'
-import { XCircle } from "react-feather"
+import { XCircle, Check } from "react-feather"
 import apiHelper from "../../../Helpers/ApiHelper"
 import Flatpickr from 'react-flatpickr'
 import '@styles/react/libs/flatpickr/flatpickr.scss'
@@ -56,11 +56,12 @@ const PersonalDetail = ({state, CallBack, emp_state}) => {
   })
   const renderUserImg = () => {
       return (
+      
         <img
           height='110'
           width='110'
           alt='user-avatar'
-          src={URL.createObjectURL(profileImage)}
+          src={profileImage !== null ? URL.createObjectURL(profileImage) : null}
           className='img-fluid rounded mt-3 mb-2'
         />
       )

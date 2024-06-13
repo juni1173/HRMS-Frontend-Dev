@@ -357,6 +357,70 @@ const Routes = [
   {
     path: '/admin/payroll',
     component: lazy(() => import('../../views/admin-payroll/Tabs'))
+  },
+  {
+    path: '/zoom',
+    component: lazy(() => import('../../views/Zoom/index'))
+  },
+  {
+    path: '/zoommeeting/:id/:pass/:token/:role',
+    component: lazy(() => import('../../views/Zoom/Components/JoinMeeting')),
+    layout:'BlankLayout'
+  },
+  {
+    path: '/requisition',
+    component: lazy(() => import('../../views/Requisition/index'))
+  },
+  {
+    path: '/hr/requisition',
+    component: lazy(() => import('../../views/Requisition/hrcomponents/index'))
+  },
+  {
+    path: '/email/connect',
+    component: lazy(() => import('../../views/EmailIntegrations/index'))
+  },
+  {
+    path: '/email/panel',
+    exact: true,
+    appLayout: true,
+    className: 'email-application',
+    component: lazy(() => import('../../views/EmailIntegrations/EmailComponents/Panel'))
+  },
+  {
+    path: '/integerations',
+    exact: true,
+    appLayout: true,
+    className: 'integerations',
+    component: lazy(() => import('../../views/Integrations/index'))
+  },
+  {
+    path: '/workmodels',
+    // exact: true,
+    // appLayout: true,
+    // className: 'workmodels',
+    component: lazy(() => import('../../views/WorkModels/index'))
+  },
+  {
+    path: '/workmodel/accesscontrol',
+    // exact: true,
+    // appLayout: true,
+    // className: 'workmodels',
+    component: lazy(() => import('../../views/WorkModels/Components/configurations'))
+  },
+  {
+    path: '/workmodel/showmodels',
+    // exact: true,
+    // appLayout: true,
+    // className: 'workmodels',
+    component: lazy(() => import('../../views/WorkModels/Components/workingmodel'))
+  },
+  {
+    path: '/workmodel/setup',
+    component: lazy(() => import('../../views/WorkModels/Components/Setup'))
+  },
+  {
+    path: '/workmodel/assign',
+    component: lazy(() => import('../../views/WorkModels/WorkingModelAssign/index'))
   }
 ]
 
