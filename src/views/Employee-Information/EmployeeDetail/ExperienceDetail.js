@@ -4,10 +4,12 @@ import {Modal, ModalBody, ModalHeader, Card, CardBody, CardTitle, Spinner, Table
 import EmployeeHelper from "../../Helpers/EmployeeHelper"
 import UpdateEmpExperience from "../UpdateEmployeeComponents/UpdateEmpExperience"
 import CreateEmpExperience from "../CreateEmployeeComponents/CreateEmpExperience"
-
+import apiHelper from "../../Helpers/ApiHelper"
+import { IoAddCircleOutline  } from "react-icons/io5"
+import { RiEditBoxFill, RiTimelineView, RiDeleteBin5Fill } from "react-icons/ri"
 // import user_blank  from "../../../assets/images/avatars/user_blank.png"
 const ExperienceDetail = ({empData, CallBack, url_params}) => {
-    // const Api = apiHelper()
+    const Api = apiHelper()
     const EmpHelper = EmployeeHelper()
     const [createModal, setCreateModal] = useState(false)
     const [editModal, setEditModal] = useState(false)
@@ -15,26 +17,28 @@ const ExperienceDetail = ({empData, CallBack, url_params}) => {
     return (
         <Card className="emplyee_Experience_detail">
         <CardTitle>
-                    <div className="row bg-blue">
-                        <div className="col-lg-4 col-md-4 col-sm-4"></div>
-                        <div className='col-lg-4 col-md-4 col-sm-4'>
-                            <h4 color='white' className="text-center">Experience Detail</h4>
+        <div className="d-flex justify-content-between bg-lightgrey">
+                        <div className="d-flex">
+                            <RiTimelineView   color="#315180" size={'18px'}/> <h4>Experience Details</h4>
                         </div>
-                        <div className="col-lg-4 col-md-4 col-sm-4">
-                            <button
-                                className="border-0 no-background float-right"
-                                title="Edit Employee"
-                                onClick={() => setCreateModal(true)}
-                                >
-                                <Plus color="white"/>
-                            </button>
+                        <div>
+                            {Api.role === 'admin' && (
+                                <button
+                                    className="border-0 no-background float-right"
+                                    title="Add Bank detail"
+                                    style={{fontSize:'14px'}}
+                                    onClick={() => setCreateModal(true)}
+                                    >
+                                    <IoAddCircleOutline  color="#315180" size={'18px'}/> New
+                                </button>
+                            )}
                         </div>
                     </div>
         </CardTitle>
         { Object.values(empData.employee_companies).length > 0 ? (
         <>
             <CardBody>
-                    <Table bordered striped responsive>
+                    <Table responsive>
                         <thead>
                             <tr>
                                 <th>Employee Name</th>
@@ -67,7 +71,7 @@ const ExperienceDetail = ({empData, CallBack, url_params}) => {
                                             }}
                                             
                                         >
-                                            <Edit color="orange" />
+                                            <RiEditBoxFill color="orange" size="20px"/>
                                         </button>
                                         </div>
                                         <div className="col-lg-6">
@@ -75,7 +79,7 @@ const ExperienceDetail = ({empData, CallBack, url_params}) => {
                                             className="border-0"
                                             onClick={() => EmpHelper.DeleteEmpExperience(url_params.uuid, company.id).then(() => { CallBack() })}
                                         >
-                                            <XCircle color="red" />
+                                            <RiDeleteBin5Fill color="red" size="20px"/>
                                         </button>
                                         </div>
                                     </div>

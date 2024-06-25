@@ -6,6 +6,9 @@ import apiHelper from "../../Helpers/ApiHelper"
 import EmployeeHelper from "../../Helpers/EmployeeHelper"
 import UpdateEmpContact from "../UpdateEmployeeComponents/UpdateEmpContact"
 import CreateEmpContact from "../CreateEmployeeComponents/CreateEmpContact"
+import { IoAddCircleOutline  } from "react-icons/io5"
+import { MdContactPhone } from "react-icons/md"
+import { RiEditBoxFill, RiDeleteBin5Fill  } from "react-icons/ri"
 // import user_blank  from "../../../assets/images/avatars/user_blank.png"
 const ContactDetail = ({empData, CallBack, url_params}) => {
     const Api = apiHelper()
@@ -15,27 +18,31 @@ const ContactDetail = ({empData, CallBack, url_params}) => {
     const [item, setItem] = useState()
     return (
         <Card className="emplyee_contact_detail">
-        <CardTitle>
-                    <div className="row bg-blue">
-                        <div className="col-lg-4 col-md-4 col-sm-4"></div>
-                        <div className='col-lg-4 col-md-4 col-sm-4'>
-                            <h4 color='white' className="text-center">Contact Detail</h4>
+            <CardTitle className= 'mb-0'>
+                    <div className="d-flex justify-content-between bg-lightgrey">
+                        <div className="d-flex">
+                            <MdContactPhone  color="#315180" size={'18px'}/> <h4>Contact Details</h4>
                         </div>
-                        <div className="col-lg-4 col-md-4 col-sm-4">
-                            <button
-                                className="border-0 no-background float-right"
-                                title="Add Contact"
-                                onClick={() => setCreateModal(true)}
-                                >
-                                <Plus color="white"/>
-                            </button>
+                        <div>
+                            {Api.role === 'admin' && (
+                                <button
+                                    className="border-0 no-background float-right"
+                                    title="Add Contact"
+                                    style={{fontSize:'14px'}}
+                                    onClick={() => setCreateModal(true)}
+                                    >
+                                    <IoAddCircleOutline  color="#315180" size={'18px'}/> New
+                                </button>
+                            )}
                         </div>
                     </div>
+                    
         </CardTitle>
+        
         {Object.values(empData.employee_contacts).length > 0 ? (
         <>
             <CardBody>
-                    <Table bordered striped responsive>
+                    <Table responsive>
                         <thead>
                             <tr>
                                 <th>Employee Name</th>
@@ -68,7 +75,7 @@ const ContactDetail = ({empData, CallBack, url_params}) => {
                                             
                                             }}
                                         >
-                                            <Edit color="orange" />
+                                            <RiEditBoxFill color="orange" size={"20px"}/>
                                         </button>
                                         </div>
                                         <div className="col-lg-6">
@@ -76,7 +83,7 @@ const ContactDetail = ({empData, CallBack, url_params}) => {
                                             className="border-0"
                                             onClick={() => EmpHelper.DeleteEmpContact(url_params.uuid, contact.id).then(() => { CallBack() })}
                                         >
-                                            <XCircle color="red" />
+                                            <RiDeleteBin5Fill color="red" size={"20px"}/>
                                         </button>
                                         </div>
                                     </div>
