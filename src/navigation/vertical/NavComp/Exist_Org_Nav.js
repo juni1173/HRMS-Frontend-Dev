@@ -38,7 +38,7 @@ let nav = []
   },
   {
     id: 'nav-attendance',
-    title: 'Time',
+    title: 'Attendance',
     icon: <Clock size={30} />,
     navLink:'/admin/attendance'
     
@@ -196,38 +196,6 @@ let nav = []
     title: 'Payroll',
     icon: <BookOpen size={30}/>,
     navLink: '/admin/payroll'
-    // children: [  
-    //   {
-    //     id: 'Payroll-Configuration',
-    //     title: 'Payroll Configuration',
-    //     icon: <Circle size={12} />,
-    //     navLink: '/payroll-configuration'
-    //   },   
-    //   {
-    //     id: 'Salary-permissions',
-    //     title: 'Salary Permissions',
-    //     icon: <Circle size={12} />,
-    //     navLink: '/salary-permissions'
-    //   },
-    //   {
-    //     id: 'Salary-Batch',
-    //     title: 'Salary Batch',
-    //     icon: <Circle size={12} />,
-    //     navLink: '/payroll/salarybatch'
-    //   },
-    //   {
-    //     id: 'Emp-Salary',
-    //     title: 'Emp Slary',
-    //     icon: <Circle size={12} />,
-    //     navLink: '/payroll/selectbatch'
-    //   }, 
-    //    {
-    //     id: 'Salary-Record',
-    //     title: 'Salary Record',
-    //     icon: <Circle size={12} />,
-    //     navLink: '/payroll/salary/batches'
-    //   }
-    // ] 
   },
   // {
   //       id: 'nav-configurations',

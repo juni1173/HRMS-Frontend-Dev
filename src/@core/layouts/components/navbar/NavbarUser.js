@@ -6,7 +6,7 @@ import UserDropdown from './UserDropdown'
 import { useHistory } from 'react-router-dom'
 
 // ** Third Party Components
-import { Sun, Moon, Home, Archive, Grid, Video, Mail } from 'react-feather'
+import { Sun, Moon, Home, Archive, Grid, Video, Mail, Settings } from 'react-feather'
 
 // ** Reactstrap Imports
 import { NavItem, NavLink } from 'reactstrap'
@@ -63,6 +63,7 @@ const NavbarUser = props => {
   <Grid className="mx-2" onClick={() => history.push('/apps')} />
   <Video className="mx-2" onClick={() => history.push('/zoom')} />
   <Mail className="mx-2" onClick={() => history.push('/email/panel')} />
+  {JSON.parse(localStorage.getItem('userData')).user_role === 'employee' ? null : <Settings className="mx-2" onClick={() => history.push('/configurations')} /> }
   <UserDropdown />
 </div>
     </Fragment>

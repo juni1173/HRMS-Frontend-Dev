@@ -1,5 +1,5 @@
 import React, { Fragment, useEffect, useState, useRef } from 'react'
-import { Row, Col, Label, Button, Spinner, Input, Badge, Table, UncontrolledTooltip, CardBody, Card } from 'reactstrap'
+import { Row, Nav, NavItem, NavLink, TabPane, TabContent, Col, Label, Button, Spinner, Input, Badge, Table, UncontrolledTooltip, CardBody, Card, Offcanvas, OffcanvasBody, OffcanvasHeader, CardText, CardTitle } from 'reactstrap'
 import { Save, XCircle, FileText, HelpCircle } from 'react-feather'
 import Select from 'react-select'
 import apiHelper from '../../Helpers/ApiHelper'
@@ -13,6 +13,7 @@ import DatePanel from "react-multi-date-picker/plugins/date_panel"
 import weekends from "react-multi-date-picker/plugins/highlight_weekends"
 const format = "YYYY-MM-DD"
 import EmployeeHelper from '../../Helpers/EmployeeHelper'
+import StatusLogsComponent from './StatusLogs'
 const Leave = ({leavedata, yearoptions}) => {
   const employeeHelper = EmployeeHelper()
     const Api = apiHelper()
@@ -26,19 +27,39 @@ const Leave = ({leavedata, yearoptions}) => {
     const yearValueRef = useRef(null)
     const [leave_types] = useState([])
     const [attachment, setAttachment] = useState(null)
+    const [hierarchyData, setHierarchyData] = useState()
 
     const [leaveData, setLeaveData] = useState({
         leave_types: '',
         start_date : '',
         end_date: '',
-        duration: '',
-        team_lead: ''
+        duration: ''
+        // team_lead: ''
    })
    const [dates, setDates] = useState([])
+   const [isLogsOpen, setIsLogsOpen] = useState(false)
+   const [currentLogs, setCurrentLogs] = useState()
+
+    const toggleLogs = () => setIsLogsOpen(!isLogsOpen)
+
+    const handleLogsClick = (logs) => {
+        setCurrentLogs(logs)
+        toggleLogs()
+    }
     // new DateObject().set({ day: 4, format }),
     // new DateObject().set({ day: 25, format }),
     // new DateObject().set({ day: 20, format })
-    
+    const fetchHierarchy = async(leave_type) => {
+      const formData = new FormData()
+        formData['type'] = leave_type
+        formData['short_code'] = 'LR'
+        const response = await Api.jsonPost('/approval/approvalhierarchy/', formData)
+        if (response.status === 200) {
+          setHierarchyData(response.data)
+        } else {
+          return Api.Toast('error', 'Pre server data not found')   
+        }
+     } 
     const onChangeLeavesDetailHandler = (InputName, InputType, e) => {
         
         let InputValue
@@ -54,13 +75,25 @@ const Leave = ({leavedata, yearoptions}) => {
         } else if (InputType === 'file') {
             InputValue = e.target.files[0].name
         }
-
+        if (InputName === 'leave_types') {
+          fetchHierarchy(e)
+        }
+        if (InputName.startsWith('evaluator_')) {
+          const evaluatorUnit = InputName.replace('evaluator_', '')
+          setLeaveData((prevState) => ({
+            ...prevState,
+            evaluators: {
+              ...prevState.evaluators,
+              [evaluatorUnit]: InputValue
+            }
+          }))
+        } else {
         setLeaveData(prevState => ({
         ...prevState,
         [InputName] : InputValue
         
         }))
-
+      }
     }
     const leave_types_dropdown = () => {
       if (Object.values(leavedata).length > 0) {
@@ -124,8 +157,22 @@ useEffect(() => {
             formData.append('end_date', leaveData.end_date)
             formData.append('duration', leaveData.duration)
             formData.append('leave_dates', leaveDates)
-            formData.append('team_lead', leaveData.team_lead.value)
+            // formData.append('team_lead', leaveData.team_lead.value)
             if (attachment !== null) formData.append('attachment', attachment)
+            // Append hierarchy_data
+const hierarchydata = hierarchyData.map(item => {
+  const evaluatorUnit = Object.keys(leaveData.evaluators).find(unit => unit === item.unit_title)
+  const selectedEvaluator = evaluatorUnit ? leaveData.evaluators[evaluatorUnit].value : null
+  
+  return {
+    unit_id: item.id,
+    unit_title: item.unit_title,
+    evaluator: item.is_fixed ? item.employee : selectedEvaluator,
+    is_fixed: item.is_fixed
+  }
+})
+
+       formData.append('hierarchy_data', JSON.stringify(hierarchydata))
             await Api.jsonPost(`/reimbursements/employees/leaves/`, formData, false).then(result => {
                 if (result) {
                     if (result.status === 200) {
@@ -138,7 +185,8 @@ useEffect(() => {
                             start_date : '',
                             end_date: '',
                             duration: '',
-                            team_lead: ''
+                            team_lead: '',
+                            evaluators: {}
                        })
                         )
                         setDates([])
@@ -201,7 +249,66 @@ useEffect(() => {
             } 
         })
     }
-    
+    const [activeTab, setActiveTab] = useState(0)
+
+    const toggleTab = (tabIndex) => {
+      if (activeTab !== tabIndex) setActiveTab(tabIndex)
+    }
+    const renderApprovalMessage = () => {
+      if (hierarchyData && hierarchyData.length > 0) {
+        return (
+          <div className="approval-message-container">
+            <Nav tabs>
+              {hierarchyData.map((item, index) => (
+                <NavItem key={index}>
+                  <NavLink
+                    className={index === hierarchyData.length - 1 ? 'final-approval-tab' : ''}
+                    active={activeTab === index}
+                    onClick={() => toggleTab(index)}
+                  >
+                    {item.unit_title} {item.employee_name ? `(${item.employee_name})` : ''}
+                    {index === hierarchyData.length - 1 && <Badge color="danger">Final</Badge>}
+                    {item.is_veto && <Badge color="success">Veto Power</Badge>}
+                  </NavLink>
+                </NavItem>
+              ))}
+            </Nav>
+            <TabContent activeTab={activeTab}>
+              {hierarchyData.map((item, index) => (
+                <TabPane key={index} tabId={index}>
+                  <Table>
+                    <tbody>
+                      <tr>
+                        <td>
+                          {item.is_veto  ? "This request requires approval from a veto authority:"   : index === hierarchyData.length - 1 ? "Your request needs final approval from:"  : "Your request needs to be approved by:"}
+                        </td>
+                        <td>{item.unit_title} {item.employee_name ? `(${item.employee_name})` : ''}</td>
+                      </tr>
+                      {item.is_fixed === false && (
+                        <tr>
+                          <td>Correspondent Selection:</td>
+                          <td>
+                            You can select the correspondent person for {item.unit_title}
+                            <br />
+                            <Select
+                              type="text"
+                              name={`evaluator_${item.unit_title}`}
+                              options={employees}
+                              onChange={(e) => onChangeLeavesDetailHandler(`evaluator_${item.unit_title}`, 'select', e)}
+                            />
+                          </td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </Table>
+                </TabPane>
+              ))}
+            </TabContent>
+          </div>
+        )
+      }
+      return null
+    }
   return (
     <Fragment>
         <Row>
@@ -294,7 +401,7 @@ useEffect(() => {
         />
         {/* </div> */}
             </Col>
-                 <Col md="6" className="mb-1">
+                 {/* <Col md="6" className="mb-1">
                 <Label className="form-label">
                Team Lead
                 </Label>
@@ -304,7 +411,7 @@ useEffect(() => {
                     options={employees}
                     onChange={ (e) => { onChangeLeavesDetailHandler('team_lead', 'select', e) }}
                     />
-            </Col>
+            </Col> */}
         <Col md={6}>
                 <Button color="primary" className="btn-next mt-2" onClick={submitForm} disabled={isButtonDisabled}>
                 <span className="align-middle d-sm-inline-block">
@@ -315,6 +422,11 @@ useEffect(() => {
                   className="align-middle ms-sm-25 ms-0"
                 ></Save>
               </Button>
+        </Col>
+        <Col md={12}>
+        <div className="mt-2">
+                        {renderApprovalMessage()}
+                      </div>
         </Col>
         </Row>
         </CardBody></Card> : null}
@@ -355,10 +467,11 @@ useEffect(() => {
           {data.map((employeeData, employeeKey) => (
             <React.Fragment key={employeeKey}>
               {employeeData.leave_data.length > 0 && (
-                
-                <Table bordered striped responsive className='my-1' key={employeeKey}>
+                <>
+                 {/* <Table bordered striped responsive className='my-1' key={employeeKey}> */}
                   {employeeData.leave_data.some(leaveData => leaveData.employee_leave_records.length > 0) && (
-                  <thead className='table-dark text-center'>
+                  <>
+                  {/* <thead className='table-dark text-center'>
                     <tr>
                       <th scope="col" className="text-nowrap">
                         Type
@@ -382,49 +495,148 @@ useEffect(() => {
                         Actions
                       </th>
                     </tr>
-                  </thead>
-                  )}
-                  <tbody className='text-center'>
+                  </thead> */}
+                 
+                  {/* <tbody className='text-center'> */}
                     {employeeData.leave_data.map((leaveData, leaveDataKey) => (
                       <React.Fragment key={leaveDataKey}>
                         {leaveData.employee_leave_records.map((record, recordKey) => (
-                          <tr key={recordKey}>
-                            <td className='nowrap'>{record.leave_types_title ? record.leave_types_title : <Badge color='light-danger'>N/A</Badge>}</td>
-                            <td className='nowrap'>{record.duration ? record.duration : <Badge color='light-danger'>N/A</Badge>}</td>
-                            <td className='nowrap'>{record.start_date ? record.start_date : <Badge color='light-danger'>N/A</Badge>}</td>
-                            <td className='nowrap'>{record.end_date ? record.end_date : <Badge color='light-danger'>N/A</Badge>}</td>
-                            <td>
-                              {record.attachment ? <a target='_blank' href={`${process.env.REACT_APP_PUBLIC_URL}${record.attachment}`}> <FileText /> </a> : <Badge color='light-danger'>N/A</Badge>}
-                            </td>
-                            <td>
-                              <Badge color={(record.status && record.status === 'approved') && 'light-success'}>{record.status ? record.status : <Badge color='light-danger'>N/A</Badge>}</Badge> 
-                              {record.decision_reason && (
-                                <>
-                                  <HelpCircle id={`UnControlledLeave${recordKey}`} />
-                                  <UncontrolledTooltip target={`UnControlledLeave${recordKey}`}>{record.decision_reason}</UncontrolledTooltip>
-                                </>
-                              )}
-                            </td>
-                            <td>
-                              {record.status === 'in-progress' && (
-                                <Row className='text-center'>
-                                  <Col className='col-12'>
-                                    <button
-                                      className="border-0 no-background"
-                                      onClick={() => removeAction(record.id)}
-                                    >
-                                      <XCircle color="red" />
-                                    </button>
-                                  </Col>
-                                </Row>
-                              )}
-                            </td>
-                          </tr>
+                          <>
+                            <Col md={12} key={recordKey} className="mb-4">
+              <Card className="shadow-sm border">
+                <CardBody>
+                  <Row>
+                    <Col xs={12} className="text-center">
+                      <CardTitle tag="h5">
+                        {record.leave_types_title ? record.leave_types_title : <Badge color="danger">N/A</Badge>}
+                      </CardTitle>
+                    </Col>
+                    <Col xs={4}>
+                      <CardText>
+                        <strong>Duration:</strong> {record.duration ? record.duration : <Badge color="danger">N/A</Badge>}
+                      </CardText>
+                      </Col>
+                      <Col xs={4} className='mt-1'>
+                      <CardText>
+                        <strong>Start Date:</strong> {record.start_date ? record.start_date : <Badge color="danger">N/A</Badge>}
+                      </CardText>
+                      </Col>
+                      <Col xs={4} className='mt-1'>
+                      <CardText>
+                        <strong>End Date:</strong> {record.end_date ? record.end_date : <Badge color="danger">N/A</Badge>}
+                      </CardText>
+                    </Col>
+                    <Col xs={4} className='mt-1'>
+                      <CardText>
+                        <strong>Attachment:</strong> {record.attachment ? (
+                          <a target="_blank" rel="noopener noreferrer" href={`${process.env.REACT_APP_PUBLIC_URL}${record.attachment}`}>
+                            <FileText />
+                          </a>
+                        ) : (
+                          <Badge color="danger">N/A</Badge>
+                        )}
+                      </CardText>
+                      </Col>
+                      <Col xs={4} className='mt-1'>
+                      <CardText>
+                        <strong>Status:</strong> <Badge color={record.status === 'approved' ? 'success' : 'primary'} pill>
+                          {record.status ? record.status : 'N/A'}
+                        </Badge>
+                        {record.decision_reason && (
+                          <>
+                            <HelpCircle id={`UnControlledWork${recordKey}`} />
+                            <UncontrolledTooltip target={`UnControlledWork${recordKey}`}>
+                              {record.decision_reason}
+                            </UncontrolledTooltip>
+                          </>
+                        )}
+                        {/* {record.status !== 'approved' && record.status !== 'not-approved' && (
+                          <span>
+                            {record.status_logs && record.status_logs.length > 0 ? `${record.status_logs[0].status} by ${record.status_logs[0].unit_title} (${record.status_logs[0].action_by_name})` : 'in-progress'}
+                          </span>
+                        )} */}
+                      </CardText>
+                      </Col>
+                      {record.status !== 'approved' && record.status !== 'not-approved' ?    <Col xs={4} className='mt-1'>
+                      <CardText>
+                        <strong>Latest Status:</strong>
+                          <span>
+                            {record.status_logs && record.status_logs.length > 0 ? `${record.status_logs[0].status} by ${record.status_logs[0].unit_title} (${record.status_logs[0].action_by_name})` : 'in-progress'}
+                          </span>
+                      </CardText>
+                    </Col> : null}
+                    <Col xs={4} className='mt-1'>
+                      <CardText>
+                      <strong>Remaining Leaves:</strong> {leaveData.remaining_leaves ? leaveData.remaining_leaves : <Badge color="danger">N/A</Badge>}
+                      </CardText>
+                      </Col>
+                      <Col xs={4} className='mt-1'>
+                      <CardText>
+                        <strong>In-Progress Leaves:</strong> {leaveData.in_progress_leaves ? leaveData.in_progress_leaves : <Badge color="danger">N/A</Badge>}
+                      </CardText>
+                    </Col>
+                    <Col xs={4} className='mt-1'>
+                      <CardText>
+                        <strong>Yearly Limit:</strong> {leaveData.emp_yearly_leaves ? leaveData.emp_yearly_leaves : <Badge color="danger">N/A</Badge>}
+                      </CardText>
+                    </Col>
+                    {record.status === 'in-progress' ?   <Col xs={4} className="text-center mt-1">
+                        <Button color="link" className="p-0" onClick={() => removeAction(record.id)}>
+                          <XCircle color="red" />
+                        </Button>  
+                    </Col> : null}
+                    <Col xs={4} className="text-center mt-1">
+                    <CardText>
+                      <Button color="link" className="p-0" onClick={() => handleLogsClick(record.status_logs)}>
+                        View Details
+                      </Button>
+                      </CardText>
+                    </Col>
+                  </Row>
+                </CardBody>
+              </Card>
+            </Col>
+                          </>
+                          // <tr key={recordKey}>
+                          //   <td className='nowrap'>{record.leave_types_title ? record.leave_types_title : <Badge color='light-danger'>N/A</Badge>}</td>
+                          //   <td className='nowrap'>{record.duration ? record.duration : <Badge color='light-danger'>N/A</Badge>}</td>
+                          //   <td className='nowrap'>{record.start_date ? record.start_date : <Badge color='light-danger'>N/A</Badge>}</td>
+                          //   <td className='nowrap'>{record.end_date ? record.end_date : <Badge color='light-danger'>N/A</Badge>}</td>
+                          //   <td>
+                          //     {record.attachment ? <a target='_blank' href={`${process.env.REACT_APP_PUBLIC_URL}${record.attachment}`}> <FileText /> </a> : <Badge color='light-danger'>N/A</Badge>}
+                          //   </td>
+                          //   <td>
+                          //     <Badge color={(record.status && record.status === 'approved') && 'light-success'}>{record.status ? record.status : <Badge color='light-danger'>N/A</Badge>}</Badge> 
+                          //     {record.decision_reason && (
+                          //       <>
+                          //         <HelpCircle id={`UnControlledLeave${recordKey}`} />
+                          //         <UncontrolledTooltip target={`UnControlledLeave${recordKey}`}>{record.decision_reason}</UncontrolledTooltip>
+                          //       </>
+                          //     )}
+                          //   </td>
+                          //   <td>
+                          //     {record.status === 'in-progress' && (
+                          //       <Row className='text-center'>
+                          //         <Col className='col-12'>
+                          //           <button
+                          //             className="border-0 no-background"
+                          //             onClick={() => removeAction(record.id)}
+                          //           >
+                          //             <XCircle color="red" />
+                          //           </button>
+                          //         </Col>
+                          //       </Row>
+                          //     )}
+                          //   </td>
+                          // </tr>
                         ))}
-                      </React.Fragment>
-                    ))}
-                  </tbody>
-                </Table>
+                       </React.Fragment>
+                    ))}  
+                    </>
+                    )}
+                    </>
+                //    </tbody>
+                // </Table>
               )}
             </React.Fragment>
           ))}
@@ -447,7 +659,12 @@ useEffect(() => {
   <div className="text-center"><Spinner /></div>
 )}
  </Row>
-
+ <Offcanvas isOpen={isLogsOpen} toggle={toggleLogs} scroll={true} direction="end">
+        <OffcanvasHeader toggle={toggleLogs}>View History</OffcanvasHeader>
+        <OffcanvasBody>
+        <StatusLogsComponent logs={currentLogs} />
+        </OffcanvasBody>
+      </Offcanvas>
     </Fragment>
   )
 }

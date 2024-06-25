@@ -388,9 +388,6 @@ const Routes = [
   },
   {
     path: '/integerations',
-    exact: true,
-    appLayout: true,
-    className: 'integerations',
     component: lazy(() => import('../../views/Integrations/index'))
   },
   {
@@ -421,6 +418,14 @@ const Routes = [
   {
     path: '/workmodel/assign',
     component: lazy(() => import('../../views/WorkModels/WorkingModelAssign/index'))
+  },
+  {
+    path: '/approvalflow',
+    component: lazy(() => import('../../views/approvalflow/index'))
+  },
+   {
+    path: '/tasks',
+    component: lazy(() => import('../../views/TasksModule/index'))
   }
 ]
 

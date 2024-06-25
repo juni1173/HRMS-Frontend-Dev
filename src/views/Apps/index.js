@@ -29,8 +29,7 @@ const menuItems = [
               navLink: '/hr/trainings'
             }
         ]
-        },
-      
+        },     
         {
           id: 'nav-projects',
           title: 'Projects',
@@ -86,12 +85,12 @@ const menuItems = [
         //     }
         //   ] 
         // },
-        {
-              id: 'nav-configurations',
-              title: 'Configurations',
-              icon: <Settings size={20} />,
-              navLink: '/configurations'
-        },
+        // {
+        //       id: 'nav-configurations',
+        //       title: 'Configurations',
+        //       icon: <Settings size={20} />,
+        //       navLink: '/configurations'
+        // },
         {
           id: 'nav-manuals',
           title: 'SOP / EPM',
@@ -121,6 +120,12 @@ const menuItems = [
           title: 'Integerations',
           icon: <Link size={20} />,
           navLink: '/integerations'
+        },
+        {
+          id: 'nav-approvals',
+          title: 'Approval Flow',
+          icon: <Link size={20} />,
+          navLink: '/approvalflow'
         }
       //   {
       //     id: 'nav-tickets',
@@ -136,94 +141,18 @@ const menuItems = [
     //   }
 ]
 const employeeMenuItems = [
-//   {
-//     id: 'nav-Learning-Development',
-//     title: 'Learning & Development',
-//     icon: <BookOpen size={30}/>,
-//     children: [     
-//       {
-//         id: 'L&D_Dashboard',
-//         title: 'Dashboard',
-//         icon: <Circle size={12} />,
-//         navLink: '/learning_development/dashboard'
-//       },
-//       {
-//         id: 'Employee Sheet',
-//         title: 'Employee Sheet',
-//         icon: <Circle size={12} />,
-//         navLink: '/learning_development/employee/sheet'
-//       },
-//       {
-//         id: 'Subjects',
-//         title: 'Subjects',
-//         icon: <Circle size={12} />,
-//         navLink: '/subjects'
-//       },
-//       {
-//         id: 'Programs',
-//         title: 'Programs',
-//         icon: <Circle size={12} />,
-//         navLink: '/programs'
-//       },
-//       {
-//         id: 'Courses',
-//         title: 'Courses',
-//         icon: <Circle size={12} />,
-//         navLink: '/courses'
-//       },
-//       {
-//         id: 'Instructor',
-//         title: 'Instructors',
-//         icon: <Circle size={12} />,
-//         navLink: '/instructor'
-//       },
-//       {
-//         id: 'Sessions',
-//         title: 'Sessions',
-//         icon: <Circle size={12} />,
-//         navLink: '/course-sessions'
-//       },
-//       {
-//         id: 'applicants_trainees',
-//         title: 'Applicants/Trainees',
-//         icon: <Circle size={12} />,
-//         navLink: '/applicants/trainees'
-//       }
-//     ] 
-    
-//   },
-
-//   {
-//     id: 'nav-projects',
-//     title: 'Projects',
-//     icon: <CheckSquare size={30} />,
-//     navLink: '/projects'
-//   },
-    // {
-    //     id: 'nav-requests',
-    //     title: 'ESS Requests',
-    //     icon: <HelpCircle size={30} />,
-    //     navLink: '/requests'
-    // },
-    // {
-    //     id: 'nav-attendance',
-    //     title: 'Time',
-    //     icon: <Clock size={30} />,
-    //     navLink: '/attendancelist'
-    //   },
+  {
+    id: 'nav-tasks',
+    title: 'Tasks',
+    icon: <Link size={20} />,
+    navLink: '/tasks'
+  },
   {
     id: 'nav-kind_notes',
     title: 'Kind Notes',
     icon: <Bookmark size={20} />,
     navLink: '/kind_notes'
   },
-  
-  // {
-  //   id: 'nav-kpi',
-  //   title: 'KPI',
-  //   icon: <Bookmark size={30} />,
-  //   navLink: '/employee/kpi'
-  // },
   {
     id: 'nav-manuals',
     title: 'SOP / EPM',
@@ -242,18 +171,6 @@ const employeeMenuItems = [
     icon: <Book size={20} />,
     navLink: '/employee/certifications'
   },
-  // {
-  //   id: 'nav-payroll',
-  //   title: 'Payroll',
-  //   icon: <Book size={30} />,
-  //   navLink: '/employee/payroll'
-  // },
-  // {
-  //   id: 'nav-ticket',
-  //   title: 'Tickets',
-  //   icon: <Paperclip size={30} />,
-  //   navLink: '/employee/tickets'
-  // },
   {
     id: 'nav-resume',
     title: 'Resume',
@@ -265,14 +182,13 @@ const employeeMenuItems = [
     title: 'Requisition',
     icon: <FilePlus size={20} />,
     navLink: '/requisition'
+  },
+  {
+    id: 'nav-integerations',
+    title: 'Integerations',
+    icon: <Link size={20} />,
+    navLink: '/integerations'
   }
-
-  // {
-  //   id: 'nav-interview',
-  //   title: 'Interviews',
-  //   icon: <Trello size={12} />,
-  //   navLink: '/employee/interviews'
-  // }
 
 ]
 const Menu = () => {

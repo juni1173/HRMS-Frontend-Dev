@@ -10,6 +10,8 @@ import VerticalMenuHeader from './VerticalMenuHeader'
 import VerticalNavMenuItems from './VerticalNavMenuItems'
 
 const Sidebar = props => {
+  const org = JSON.parse(localStorage.getItem('organization'))
+  console.log(org)
   // ** Props
   const { menuCollapsed, routerProps, menu, currentActiveItem, skin, menuData } = props
 
@@ -45,6 +47,7 @@ const Sidebar = props => {
 
   return (
     <Fragment>
+      
       <div
         className={classnames('main-menu menu-fixed menu-accordion menu-shadow', {
           expanded: menuHover || menuCollapsed === false,
@@ -55,7 +58,9 @@ const Sidebar = props => {
         onMouseLeave={() => setMenuHover(false)}
       >
         {menu ? (
-          menu
+          <>
+          {menu}
+          </>
         ) : (
           <Fragment>
             {/* Vertical Menu Header */}

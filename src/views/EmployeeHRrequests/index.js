@@ -13,6 +13,8 @@ const Medical = lazy(() => import('./Components/Medical'))
 const Leave = lazy(() => import('./Components/Leave'))
 const PF = lazy(() => import('./Components/PF'))
 const Loan = lazy(() => import('./Components/Loan'))
+const WorkTabs = lazy(() => import('./Components/worktabs'))
+const LeaveTabs = lazy(() => import('./Components/leavetabs'))
 const ComTabs = lazy(() => import('./Components/comtabs'))
 
 const Index = () => {
@@ -24,6 +26,9 @@ const Index = () => {
   // const [data, setData] = useState([])
   const [leaveData, setLeaveData] = useState({
     leave_types: ''
+})
+const [workData, setWorkData] = useState({
+  work_types: ''
 })
 const [loanData, setLoanData] = useState({
   types: '',
@@ -49,6 +54,13 @@ const [loanData, setLoanData] = useState({
           // employee_leaves : response.data.employee_leaves
           
           }))
+        setWorkData(prevState => ({
+            ...prevState,
+            work_types : response.data.work_type
+            // employee_leaves : response.data.employee_leaves
+            
+            }))
+
           setLoanData(prevState => ({
             ...prevState,
             types : response.data.loan_type,
@@ -77,12 +89,14 @@ useEffect(() => {
       case '2':
         return <Medical yearoptions={yearoptions} />
       case '3':
-        return <Leave leavedata={leaveData} yearoptions={yearoptions} />
+        return <LeaveTabs leavedata={leaveData} yearoptions={yearoptions} />
       case '4':
         return <PF yearoptions={yearoptions} />
       case '5':
         return <Loan  loandata={loanData} yearoptions={yearoptions}/>
       case '6':
+          return <WorkTabs workdata={workData} yearoptions={yearoptions}/>
+      case '7':
         return <ComTabs/>
       default:
         return null
@@ -104,10 +118,10 @@ useEffect(() => {
           </Col> */}
           <Col md='12'>
           <Nav className='justify-content-center' tabs>
-              {[1, 2, 3, 4, 5, 6].map((tabId) => (
+              {[1, 2, 3, 4, 5, 6, 7].map((tabId) => (
                 <NavItem key={tabId}>
                   <NavLink active={active === tabId.toString()} onClick={() => toggle(tabId.toString())}>
-                    {tabId === 1 ? <> <CgGym size={20}/>Gym </> : tabId === 2 ? <><FaHandHoldingMedical size={20}/>Medical</> : tabId === 3 ? <><Icon.Calendar/>Leaves</> : tabId === 4 ? <><Icon.DollarSign size={20}/>Provident Fund</> : tabId === 5 ? <><MdAttachMoney size={20}/>Loan</> : <><Icon.Aperture/> Compensatory</>}
+                    {tabId === 1 ? <> <CgGym size={20}/>Gym </> : tabId === 2 ? <><FaHandHoldingMedical size={20}/>Medical</> : tabId === 3 ? <><Icon.Calendar/>Leaves</> : tabId === 4 ? <><Icon.DollarSign size={20}/>Provident Fund</> : tabId === 5 ? <><MdAttachMoney size={20}/>Loan</> : tabId === 6 ? <><MdAttachMoney size={20}/>Work</> : <><Icon.Aperture/> Compensatory</>}
                   </NavLink>
                 </NavItem>
               ))}
