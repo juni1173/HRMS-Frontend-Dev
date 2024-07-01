@@ -1,17 +1,13 @@
 import {Fragment, useState, useEffect, useCallback} from 'react'
-import { Row, Col, Label, Spinner, Button, Badge, CardBody, Card, Input, Offcanvas, OffcanvasHeader, OffcanvasBody } from 'reactstrap'
-import { Eye, Edit, XCircle } from 'react-feather'
-import TicketDetails from './TicketDetails'
-import apiHelper from '../../Helpers/ApiHelper'
+import { Row, Col, Label, Spinner, Button, Badge, CardBody, Card, Input, Offcanvas, OffcanvasHeader, OffcanvasBody, Modal, ModalHeader, ModalBody } from 'reactstrap'
+import { Eye, Edit, XCircle, CheckCircle } from 'react-feather'
+import TicketDetails from '../TicketDetails'
+import apiHelper from '../../../Helpers/ApiHelper'
 import Select from 'react-select'
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
-import { FaUserGear, FaUserTie  } from "react-icons/fa6"
-import { GrStatusInfo } from "react-icons/gr"
-import { MdCategory } from "react-icons/md"
-import { CiViewTimeline } from "react-icons/ci"
-import { TbEditCircle } from "react-icons/tb"
-const LeadApprovals = () => {
+import TransferForm from './TransferForm'
+const AssignedTickets = () => {
   const Api = apiHelper()
   const MySwal = withReactContent(Swal)
   const [loading, setLoading] = useState(false)
@@ -19,6 +15,7 @@ const LeadApprovals = () => {
     const [canvasOpen, setCanvasOpen] = useState(false)
     const [data, setData] = useState([])
     const [UpdateData, setUpdateData] = useState([])
+    const [basicModal, setBasicModal] = useState(false)
     const status_choices = [
         {value: 1, label: 'Pending'},
         {value: 2, label:'In Progress by Team Lead'},
@@ -34,10 +31,10 @@ const LeadApprovals = () => {
         // {value: 12, label: 'Reject by HR'},
         // {value: 13, label: 'Solved by HR'}
     ]
-    const lead_choices = [
-        {value: 2, label:'In Progress by Team Lead'},
-        {value: 3, label: 'Rejected by Team Lead'},
-        {value: 4, label: 'Approved by Team Lead'}
+    const admin_choices = [
+        {value: 8, label: 'In Progress by Admin'},
+        {value: 9, label: 'Rejected by Admin'},
+        {value: 10, label: 'Solved by Admin'}
     ]
     const toggleCanvasEnd = () => {
       setCanvasPlacement('end')
@@ -51,13 +48,19 @@ const LeadApprovals = () => {
       setCanvasOpen(!canvasOpen)
       
     }
+    const TransferModal = (item) => {
+        if (item !== null) {
+            setUpdateData(item)
+        }
+      setBasicModal(!basicModal)
+    }
     const getTicketsData = async () => {
         setLoading(true)
-        await Api.get(`/ticket/team/lead/employee/`).then(result => {
+        await Api.get(`/ticket/assign/to/employee/`).then(result => {
             if (result) {
                 if (result.status === 200) {
                     const resultData = result.data
-                    console.warn(resultData)
+                    console.warn('hello', resultData)
                     setData(resultData)
                 } else {
                     // Api.Toast('error', result.message)
@@ -76,35 +79,10 @@ const LeadApprovals = () => {
     }, [])
 
     const CallBack = useCallback(() => {
+        setBasicModal(false)
         getTicketsData()
       }, [data])
-      const theme = (theme) => ({
-        ...theme,
-        spacing: {
-            ...theme.spacing,
-            controlHeight: 30,
-            baseUnit: 2
-        }
-    })
-    const customStyles = {
-    control: (base, state) => ({
-        ...base,
-        background: "#2229351a",
-        fontWeight: "600",
-        textAlign: "center",
-        cursor: 'pointer',
-        // match with the menu
-        borderRadius: state.isFocused ? "3px 3px 0 0" : 3,
-        // Overwrittes the different states of border
-        borderColor: state.isFocused ? "yellow" : "green",
-        // Removes weird border around container
-        boxShadow: state.isFocused ? null : null,
-        "&:hover": {
-            // Overwrittes the different states of border
-            borderColor: state.isFocused ? "red" : "gray"
-        }
-        })
-    }
+
     const onStatusUpdate = async (id, status_value, comment) => {
         MySwal.fire({
             title: 'Are you sure?',
@@ -123,7 +101,7 @@ const LeadApprovals = () => {
                 formData['ticket_status'] = status_value
                 if (comment !== '') {
                     formData['decision_reason'] = comment
-                    Api.jsonPatch(`/ticket/team/lead/employee/${id}/`, formData)
+                    Api.jsonPatch(`/ticket/action/by/assign/to/employee/${id}/`, formData)
                     .then((result) => {
                         if (result.status === 200) {
                             MySwal.fire({
@@ -165,19 +143,15 @@ const LeadApprovals = () => {
             <div className="single-history" key={index}>
             
             {toggleThisElement ? (
-                <div className="row">
-                <div className="col-lg-11">
+                <div className="row min-width-300">
+                <div className="col-lg-8">
                 <Select
                     isClearable={false}
-                    options={lead_choices}
+                    options={admin_choices}
                     className='react-select mb-1'
                     classNamePrefix='select'
-                    styles={customStyles}
-                    theme={theme}
                     defaultValue={status_choices.find((value) => value === item.ticket_status) ? status_choices.find((value) => value === item.ticket_status) : status_choices[0] }
                     onChange={(statusData) => setStatusValue(statusData.value)}
-                    menuPlacement="auto"
-                    menuPosition="fixed"
                     />
                     <>
                         <Label>
@@ -200,22 +174,19 @@ const LeadApprovals = () => {
                         Submit
                     </Button>
                 </div>
-                <div className="col-lg-1 float-right m-0 p-0">
-                <XCircle color="red" size={12} className='m-0 p-0' onClick={() => setToggleThisElement((prev) => !prev)}/>
+                <div className="col-lg-4 float-right">
+                <XCircle color="red" onClick={() => setToggleThisElement((prev) => !prev)}/>
                 </div>
             </div>
             ) : (
-                <div className="row ">
-                    <div className="col-lg-12">
-                        <button
-                            className="border-0 no-background float-right"
-                            title="Update Status"
-                            style={{fontSize:'14px'}}
-                            onClick={() => setToggleThisElement((prev) => !prev)}
-                            >
-                            <TbEditCircle color="#315180" size={'18px'}/> Status
-                        </button>
+                <div className="row min-width-225">
+                    <div className="col-lg-9">
+                    <h3><Badge color='light-secondary'>{status_choices.find(({value}) => value === item.ticket_status) ? status_choices.find(({value}) => value === item.ticket_status).label : status_choices[0].label }</Badge></h3>
                     </div>
+                    
+                    <div className="col-lg-3 float-right justify-content-end d-flex">
+                        <Edit color="orange" onClick={() => setToggleThisElement((prev) => !prev)}/>
+                     </div>
                 </div>
             )
                 
@@ -227,51 +198,42 @@ const LeadApprovals = () => {
     <Fragment>
     {!loading ? (
             data && Object.values(data).length > 0 ? (
-                <div className="row" >
-                    {Object.values(data).map((item, key) => (
-                                    <Col md={6} className='' key={key}>
+                    Object.values(data).map((item, key) => (
+                        <div className="row" key={key}>
+                                    <Col md={12} className=' m-1'>
                                         <Card bg="light" style={{ backgroundColor: '#F2F3F4' }} className='text-nowrap'>    
                                             <CardBody>
                                                 <Row>
-                                                    <Col md={3} className='mb-1'><h4>{item.subject ? (item.subject).substring(0, 25) : 'N/A'}</h4></Col>
-                                                    <Col md={6} >
-                                                     <h5 title='Employee Name'><span style={{color: 'grey', fontSize:'10px'}}>from</span> {item.employee_name ? item.employee_name : 'N/A'}</h5>
+                                                    <Col md={4} className='mb-1'><h4>{item.subject ? (item.subject).substring(0, 25) : 'N/A'}</h4>by <h4>{item.employee_name.toUpperCase()}</h4></Col>
+                                                    <Col md={2}>
+                                                        {(item.ticket_status === 4 || item.ticket_status === 7 || item.ticket_status === 10 || item.ticket_status === 13) ? (
+                                                                <>
+                                                                    <Badge color='light-success'><CheckCircle color='green'/> {item.ticket_status_title ? item.ticket_status_title : 'N/A'}</Badge>
+                                                                </>
+                                                            ) : (
+                                                                <>
+                                                                    <Badge color='light-warning'>{item.ticket_status_title ? item.ticket_status_title : 'N/A'}</Badge>
+                                                                </>
+                                                        )} - {item.transfer_to ? <b>{`Transferred to ${(item.transfer_to_name ? item.transfer_to_name.toUpperCase() : 'N/A')}`}</b> : <Button className='btn btn-primary btn-sm' outline onClick={() => TransferModal(item)}>Transfer</Button>}
                                                     </Col>
-                                                    <Col md={3}>
-                                                    <button
-                                                        className="border-0 no-background float-right"
-                                                        title="View Detail"
-                                                        style={{fontSize:'14px'}}
-                                                        onClick={() => DetailsToggle(item)}
-                                                        >
-                                                        <CiViewTimeline  color="#315180" size={'18px'}/> View
-                                                    </button>
+                                                    <Col md={6} className=''>
+                                                        <Eye className='float-right mb-2' color='green' onClick={() => DetailsToggle(item)}/><br></br><br></br>
+                                                        {(item.category === 2) && <StatusComponent item={item} key={key}/>} 
                                                     </Col>
-                                                    <Col md={3}>
-                                                        {item.ticket_status_title ? (
-                                                        <>
-                                                            <GrStatusInfo /> <Badge color="light-success" className='cursor-pointer' title='status'>{item.ticket_status_title}</Badge>
-                                                        </>
-                                                        ) : <Badge color="light-danger">N/A</Badge>}<br></br>
-                                                        <MdCategory /> <Badge color='light-warning' className='cursor-pointer' title='category'>{item.category_title ? item.category_title : 'N/A'}</Badge>
-                                                    </Col>
-                                                    <Col md={4}>
-                                                        <br></br>
-                                                        <FaUserGear /> <Badge color='light-secondary' className='cursor-pointer' title='Assigned to'>{item.assign_to_name ? item.assign_to_name : 'N/A'}</Badge>
-                                                    </Col>
-                                                    <Col md={5} className="">
-
-                                                       {(item.ticket_status < 5) && <StatusComponent item={item} key={key}/>} 
-                                                        {/* <Trash2 color='red' onClick={() => deleteAction(item.id)}/> */}
-                                                    </Col>
+                                                    {/* <Col md={3}>
+                                                        
+                                                        <Badge color='light-warning' className='mt-1'>{item.category_title ? item.category_title : 'N/A'}</Badge>
+                                                    </Col> */}
+                                                    
                                                     
                                                 </Row>
                                         
                                             </CardBody>
                                         </Card>
                                     </Col>
-                        ))}
-                </div>   
+                        </div>
+                        ))
+                    
             ) : (
                 <div className="text-center">No Ticket Data Found!</div>
             )
@@ -284,8 +246,14 @@ const LeadApprovals = () => {
             
           </OffcanvasBody>
         </Offcanvas>
+        <Modal isOpen={basicModal} toggle={() => setBasicModal(!basicModal)}>
+          <ModalHeader toggle={() => setBasicModal(!basicModal)}>Transfer Ticket</ModalHeader>
+          <ModalBody>
+                <TransferForm id={UpdateData.id} CallBack={CallBack}/>
+          </ModalBody>
+        </Modal>
     </Fragment>
   )
 }
 
-export default LeadApprovals
+export default AssignedTickets

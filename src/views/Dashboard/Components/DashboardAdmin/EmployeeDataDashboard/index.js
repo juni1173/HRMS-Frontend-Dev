@@ -6,11 +6,10 @@ import {
     Row, Col, 
     Card,
     CardBody,
-    Spinner, Label, Badge, Button, CardTitle
+    Spinner, Label, Badge, Button, Progress
   } from 'reactstrap'
-import apiHelper from '../../../Helpers/ApiHelper'
-import EmployeeBarChart from './EmployeeBarChart'
-import EmployeeDataTable from './EmployeeDataTable'
+import apiHelper from '../../../../Helpers/ApiHelper'
+import ChartByDepartment from './ChartByDepartment'
 
 import { FaUsers } from "react-icons/fa"
 import { RiNumbersFill } from "react-icons/ri"
@@ -33,7 +32,9 @@ const index = ({ type }) => {
     const [countData, setCountData] = useState({
         head_count: 0,
         avg_employee_age: 0,
-        avg_tenure: 0
+        avg_tenure: 0,
+        totalPermanentEmployees: 0,
+        totalProbationEmployees: 0
     })
     const [highestTotalEmployeeCount, sethighestTotalEmployeeCount] = useState(0)
     const Api = apiHelper()
@@ -43,7 +44,44 @@ const index = ({ type }) => {
     labelColor = skin === 'dark' ? '#b4b7bd' : '#6e6b7b',
     successColorShade = '#315180',
     gridLineColor = 'rgba(200, 200, 200, 0.2)'
-
+    const countPermanentEmployeesByDepartment = (arr) => {
+        const counts = arr.reduce((acc, item) => {
+          const department = item.title
+          const permanentCount = item.employees_data.filter(employee => employee.status === 'Permanent').length
+          
+          if (acc[department]) {
+            acc[department] += permanentCount
+          } else {
+            acc[department] = permanentCount
+          }
+          
+          return acc
+        }, {})
+      
+        // Convert counts to a flat array of objects
+        const flatCounts = Object.keys(counts).map(department => ({ department, count: counts[department] }))
+        
+        return flatCounts
+      }
+      const countProbationEmployeesByDepartment = (arr) => {
+        const counts = arr.reduce((acc, item) => {
+          const department = item.title
+          const permanentCount = item.employees_data.filter(employee => employee.status === 'Probation').length
+          
+          if (acc[department]) {
+            acc[department] += permanentCount
+          } else {
+            acc[department] = permanentCount
+          }
+          
+          return acc
+        }, {})
+      
+        // Convert counts to a flat array of objects
+        const flatCounts = Object.keys(counts).map(department => ({ department, count: counts[department] }))
+        
+        return flatCounts
+      }
     const calculateCount = (arr) => {
         settableData(arr.flatMap(item => item.employees_data))
         let totalEmployee = 0
@@ -74,16 +112,43 @@ const index = ({ type }) => {
         // Graph data
         const labels = arr.map(item => item.title)
         const values = arr.map(item => item.total_employee_count)
-       
-        const EmpResultChart = {
+        const permanentEmployeesArr = countPermanentEmployeesByDepartment(arr)
+          const probationEmployeesArr = countProbationEmployeesByDepartment(arr)
+          const permanentEmployeesCountArr = permanentEmployeesArr.map(item => item.count)
+          const probationEmployeesCountArr = probationEmployeesArr.map(item => item.count)
+          const totalPermanentEmployees = permanentEmployeesCountArr.reduce((accumulator, currentValue) => accumulator + currentValue, 0)
+          const totalProbationEmployees = probationEmployeesCountArr.reduce((accumulator, currentValue) => accumulator + currentValue, 0)
+          setCountData(prevState => ({
+            ...prevState,
+            totalPermanentEmployees,
+            totalProbationEmployees
+        }))
+          const EmpResultChart = {
             labels,
             datasets: [
               {
+                label: 'All Employees',
                 maxBarThickness: 10,
                 backgroundColor: successColorShade,
                 borderColor: colors.primary.main,
                 borderRadius: { topRight: 15, topLeft: 15, bottomRight: 15 },
                 data: values
+              },
+              {
+                label: 'Permanent Employees',
+                maxBarThickness: 10,
+                backgroundColor: colors.warning.main,
+                borderColor: colors.warning.main,
+                borderRadius: { topRight: 15, topLeft: 15, bottomRight: 15 },
+                data: permanentEmployeesCountArr
+              },
+              {
+                label: 'On Probation Employees',
+                maxBarThickness: 10,
+                backgroundColor: colors.danger.main,
+                borderColor: colors.danger.main,
+                borderRadius: { topRight: 15, topLeft: 15, bottomRight: 15 },
+                data: probationEmployeesCountArr
               }
             ]
           }
@@ -218,12 +283,14 @@ const index = ({ type }) => {
             </>
         ) : <div className='text-center'><Spinner color=''/></div>}
         <Col md='4'>
-            <Card className='mb-2'>
+            <Row>
+                <Col md='12'>
+            <Card className='mb-2' style={{ background: 'linear-gradient(to right, #0f0c29, #302b63, #24243e)'}}>
             {!loading && (
                 (data && Object.values(data).length > 0) ? (
                     <CardBody className='pb-0'>
-                        <h3><FaUsers color="#315180" size={'24px'}/> {countData.head_count ? countData.head_count : 'N/A'}</h3>
-                        <p><b>Head Count</b></p>
+                        <h3 className='text-white'><FaUsers color="#fff" size={'24px'}/> {countData.head_count ? countData.head_count : 'N/A'}</h3>
+                        <p className='text-white'><b>Head Count</b></p>
                     </CardBody>
                 ) : (
                     <CardBody className='pb-0'>
@@ -234,51 +301,60 @@ const index = ({ type }) => {
                 
             )}
             </Card>
+                </Col>
+                <Col md='12'>
+                    <Card className='mb-2' style={{ background: 'linear-gradient(to right, #ff512f, #f09819)'}}>
+                    {!loading && (
+                        (data && Object.values(data).length > 0) ? (
+                            <CardBody className='pb-0'>
+                                <h3 className='text-white'><RiNumbersFill color="#fff" size={'24px'}/> {countData.avg_employee_age ? countData.avg_employee_age.toFixed(2) : 'N/A'}</h3>
+                            <p className='text-white'><b>Average Employee Age</b></p>
+                            </CardBody>
+                        ) :  (
+                            <CardBody className='pb-0'>
+                                {/* <h3>N/A</h3> */}
+                                <b>Average Employee Age</b>
+                            </CardBody>
+                        )
+                        
+                    )}
+                    </Card>
+                </Col>
+                <Col md='12'>
+                    <Card className='mb-2'  style={{ background: 'linear-gradient(to right, #403a3e, #be5869)'}}>
+                    {!loading && (
+                        (data && Object.values(data).length > 0) && (
+                            <CardBody className='pb-0'>
+                                <h3 className='text-white'><GrLineChart color="#fff" size={'24px'}/> {countData.avg_tenure ? `${Number(countData.avg_tenure.toFixed(2))}` : 'N/A'}</h3>
+                                <p className='text-white'><b>Average Employee Tenure</b></p>
+                            </CardBody>
+                        ) 
+                        
+                    )}
+                    </Card>
+                </Col>
+                <Col md='12'>
+                    <Card className='mb-2'  style={{ background: 'linear-gradient(to right, #2e1437, #948e99)'}}>
+                    {!loading && (
+                        (data && Object.values(data).length > 0) && (
+                            <CardBody className=''>
+                                <h3 className='text-white'>{countData.totalPermanentEmployees} Permanents</h3>
+                                <Progress className='progress-bar-white' value={Math.round((countData.totalPermanentEmployees / countData.head_count) * 100)} ></Progress> <small className='text-white'>{Math.round((countData.totalPermanentEmployees / countData.head_count) * 100)}% Permanents</small>
+                                <h3 className='text-white'>{countData.totalProbationEmployees} Probations</h3>
+                                <Progress className='progress-bar-white' value={Math.round((countData.totalProbationEmployees / countData.head_count) * 100)} ></Progress><small className='text-white'>{Math.round((countData.totalProbationEmployees / countData.head_count) * 100)}% Probations</small>
+                                {/* <p className='text-white'><b></b></p> */}
+                            </CardBody>
+                        )
+                        
+                    )}
+                    </Card>
+                </Col>
+            </Row>
         </Col>
-        <Col md='4'>
-            <Card className='mb-2'>
-            {!loading && (
-                (data && Object.values(data).length > 0) ? (
-                    <CardBody className='pb-0'>
-                        <h3><RiNumbersFill color="#315180" size={'24px'}/> {countData.avg_employee_age ? countData.avg_employee_age : 'N/A'}</h3>
-                       <p><b>Average Employee Age</b></p>
-                    </CardBody>
-                ) :  (
-                    <CardBody className='pb-0'>
-                        {/* <h3>N/A</h3> */}
-                        <b>Average Employee Age</b>
-                    </CardBody>
-                )
-                
-            )}
-            </Card>
-        </Col>
-        <Col md='4'>
-            <Card className='mb-2'>
-            {!loading && (
-                (data && Object.values(data).length > 0) ? (
-                    <CardBody className='pb-0'>
-                        <h3><GrLineChart color="#315180" size={'24px'}/> {countData.avg_tenure ? `${Number(countData.avg_tenure.toFixed(2))}` : 'N/A'}</h3>
-                        <p><b>Average Employee Tenure</b></p>
-                    </CardBody>
-                ) : (
-                    <CardBody className='pb-0'>
-                        {/* <h3>N/A</h3> */}
-                        <b>Average Employee Tenure</b>
-                    </CardBody>
-                )
-                
-            )}
-            </Card>
-        </Col>
+        
         {empChartData && Object.values(empChartData).length > 0 && (
-            <Col md='12'>
-            <EmployeeBarChart  labelColor={labelColor} gridLineColor={gridLineColor} data={empChartData} highestTotalEmployeeCount={highestTotalEmployeeCount}/>
-            </Col>
-        )}
-        {(type !== 'dashboard' && tableData && Object.values(tableData).length > 0) && (
-            <Col md='12'>
-            <EmployeeDataTable  data={tableData}/>
+            <Col md='8'>
+            <ChartByDepartment  labelColor={labelColor} gridLineColor={gridLineColor} data={empChartData} highestTotalEmployeeCount={highestTotalEmployeeCount}/>
             </Col>
         )}
         

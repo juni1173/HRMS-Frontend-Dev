@@ -229,6 +229,19 @@ p.label{
 	text-align: center;
 	margin: auto;
   }
+  .bg-lightgrey {
+	background-color: #E9E2E3;
+	padding : 10px 10px;
+	text-align: center;
+	margin: auto;
+	border-radius: 20px;
+  }
+  .bg-lightgrey h4{
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
+	font-weight: 600;
+	padding: 0 10px;
+  }
   .cursor-pointer{
 	cursor:pointer;
   }
@@ -443,3 +456,10 @@ div.configuration_panel .tab-pane-orange {
   font-size: 16px;
   font-weight: bold;
 }
+.detail-table td{
+	color: black;
+	font-weight: 500;
+  }
+  .progress-bar-white .progress-bar{
+	background-color: #fff;
+  }

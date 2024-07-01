@@ -4,7 +4,7 @@ import { Bar } from 'react-chartjs-2'
 // ** Reactstrap Imports
 import { Card, CardHeader, CardTitle, CardBody } from 'reactstrap'
 
-const EmployeeBarChart = ({ gridLineColor, labelColor, data, highestTotalEmployeeCount }) => {
+const ChartByDepartment = ({ gridLineColor, labelColor, data, highestTotalEmployeeCount }) => {
   // ** Chart Options
   const options = {
     responsive: true,
@@ -14,7 +14,7 @@ const EmployeeBarChart = ({ gridLineColor, labelColor, data, highestTotalEmploye
     scales: {
       x: {
         grid: {
-          color: gridLineColor,
+          color: 'lightgrey',
           borderColor: gridLineColor
         },
         ticks: { color: labelColor }
@@ -33,7 +33,14 @@ const EmployeeBarChart = ({ gridLineColor, labelColor, data, highestTotalEmploye
       }
     },
     plugins: {
-      legend: { display: false },
+      legend: {
+        align: 'end',
+        position: 'top',
+        labels: { 
+          color: labelColor,
+           usePointStyle: true, // Use point style to render as circles
+        pointStyle: 'circle' }
+      },
       tooltip: {
         backgroundColor: '#000',
         titleColor: '#fff',
@@ -56,4 +63,4 @@ const EmployeeBarChart = ({ gridLineColor, labelColor, data, highestTotalEmploye
   )
 }
 
-export default EmployeeBarChart
+export default ChartByDepartment

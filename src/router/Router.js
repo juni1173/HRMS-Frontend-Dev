@@ -86,11 +86,7 @@ const Router = () => {
     } else if (route.meta && route.meta.authRoute && isUserLoggedIn()) {
       // ** If route has meta and authRole and user is Logged in then redirect user to home page (DefaultRoute)
       // console.warn(route.meta.authRoute)
-        if (JSON.parse(localStorage.getItem('userData')).user_role === "employee") {
-          return <Redirect to='/employee/dashboard' />
-        } else if (JSON.parse(localStorage.getItem('userData')).user_role === "admin") {
-      return <Redirect to='/admin/dashboard' />
-        }
+      return <Redirect to='/organizationHome' />
       // }  else if (isUserLoggedIn() && !ability.can(action || 'read', resource)) {
       // // ** If user is Logged in and doesn't have ability to visit the page redirect the user to Not Authorized
       // return <Redirect to='/misc/not-authorized' />

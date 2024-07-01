@@ -359,6 +359,10 @@ const Routes = [
     component: lazy(() => import('../../views/admin-payroll/Tabs'))
   },
   {
+    path: '/tasks',
+    component: lazy(() => import('../../views/TasksModule/index'))
+  },
+  {
     path: '/zoom',
     component: lazy(() => import('../../views/Zoom/index'))
   },

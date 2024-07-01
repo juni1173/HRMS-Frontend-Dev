@@ -137,12 +137,12 @@ let nav = []
     icon: <Book size={30} />,
     navLink: '/employee/payroll'
   },
-  // {
-  //   id: 'nav-ticket',
-  //   title: 'Tickets',
-  //   icon: <Paperclip size={30} />,
-  //   navLink: '/employee/tickets'
-  // },
+  {
+    id: 'nav-ticket',
+    title: 'Tickets',
+    icon: <Paperclip size={30} />,
+    navLink: '/employee/tickets'
+  },
   // {
   //   id: 'nav-resume',
   //   title: 'Resume',
