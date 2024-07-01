@@ -55,12 +55,12 @@ const Tasks = ({ data, projectsData, CallBack, selectedTaskid, project_id }) => 
                         </Button>
                         </div>
                         <div className='d-flex pt-1'>
-                            <Dropdown  isOpen={dropdownOpen} toggle={() => toggleDropdown()} direction="">
+                            <Dropdown  isOpen={dropdownOpen} toggle={() => toggleDropdown()} direction="" className='chart-dropdown'>
                                 {/* <DropdownToggle className="no-background m-0 px-0"> */}
                                 <div onClick={() => toggleDropdown()}><AlignRight size={'20'} color='white'/></div>
                                 {/* </DropdownToggle> */}
-                                <DropdownMenu>
-                                <DropdownItem>
+                                <DropdownMenu className='btn-sm border-0'>
+                                <DropdownItem className='w-100'>
                                         <button
                                             className="border-0 no-background"
                                             title="All Tasks"
@@ -69,7 +69,7 @@ const Tasks = ({ data, projectsData, CallBack, selectedTaskid, project_id }) => 
                                             All Tasks
                                         </button> 
                                 </DropdownItem>
-                                <DropdownItem>
+                                <DropdownItem className='w-100'>
                                     <button
                                         className="border-0 no-background"
                                         title="Assign to me"
@@ -78,7 +78,7 @@ const Tasks = ({ data, projectsData, CallBack, selectedTaskid, project_id }) => 
                                         Assign to me
                                     </button> 
                                 </DropdownItem>
-                                <DropdownItem>
+                                <DropdownItem className='w-100'>
                                     <button
                                         className="border-0 no-background text-nowrap"
                                         // style={{marginTop:'15px', padding:'10px'}}
