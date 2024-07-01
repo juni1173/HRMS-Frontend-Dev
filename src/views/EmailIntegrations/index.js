@@ -127,7 +127,7 @@ const index = () => {
                             <p>Successfully connected to <b>{credentialsInfo[0].email ? credentialsInfo[0].email : 'N/A'}</b> with <b>{credentialsInfo[0].medium ? credentialsInfo[0].medium : 'N/A'}</b>...</p>
                         </CardHeader>
                         <CardBody>
-                            <a href=''>Click here to visit your email panel...</a>
+                            <a href='/email/panel'>Click here to visit your email panel...</a>
                         </CardBody>
                     </Card>
                     </>

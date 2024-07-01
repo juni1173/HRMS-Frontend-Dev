@@ -154,6 +154,12 @@ let nav = []
     title: 'Interviews',
     icon: <Trello size={12} />,
     navLink: '/employee/interviews'
+  },
+  {
+    id: 'nav-reassignment',
+    title: 'Re-Assignment',
+    icon: <Trello size={12} />,
+    navLink: '/reassignment'
   }
 //   {
 //     id: 'nav-roles-permissions',

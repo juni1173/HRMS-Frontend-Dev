@@ -4,7 +4,6 @@ import Select from 'react-select'
 import apiHelper from '../../Helpers/ApiHelper'
 
 const CreateModels = ({dropdowndata, CallBack}) => {
-    console.log(dropdowndata)
   const [title, setTitle] = useState('')
   const [shortCode, setShortCode] = useState('')
   const [description, setDescription] = useState('')

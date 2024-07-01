@@ -23,7 +23,7 @@ const AddTask = ({ projectsData, CallBack }) => {
    ]
    const [projDropdown, setProjectDropdown] = useState([])
    const [employeeDropdown, setEmployeeDropdown] = useState([])
-   const [statusDropdown, setStatusDropdown] = useState([])
+//    const [statusDropdown, setStatusDropdown] = useState([])
   const projectDropdown =  () => {
     const arr = []
     if (projectsData) {
@@ -104,7 +104,7 @@ const AddTask = ({ projectsData, CallBack }) => {
                         }
                     }
                     
-                    setStatusDropdown([...defaultStatusArr, ...projectStatusArr])
+                    // setStatusDropdown([...defaultStatusArr, ...projectStatusArr])
                 }
             } else {
                 Api.Toast('error', result.message)
@@ -282,7 +282,7 @@ const handleSubmit = async (event) => {
                     onChange={ (e) => { onChangeTaskDetailHandler('priority', 'select', e.value) }}
                 />
             </Col>
-            <Col md={3} className='mb-1'>
+            {/* <Col md={3} className='mb-1'>
                 <label className='form-label'>
                     Status<Badge color='light-danger'>*</Badge>
                 </label>
@@ -295,7 +295,7 @@ const handleSubmit = async (event) => {
                     // value={TaskData.assign_to ? TaskData.assign_to : ''}
                     onChange={ (e) => { onChangeTaskDetailHandler('status', 'select', e.value) }}
                 />
-            </Col>
+            </Col> */}
             
             <Col md='8' className='mb-1'>
                 <label className='form-label'>

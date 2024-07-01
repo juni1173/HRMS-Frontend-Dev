@@ -296,22 +296,22 @@ const index = () => {
             </div> 
                 {filterStatus && (
                     !filterLoading ? (
-                    <div className='d-flex justify-content-center mb-1'>    
-                        <div className='mx-1' style={{minWidth:'200px'}}>
-                        <label className='form-label'>
-                                        Type  <RefreshCcw color='darkblue' size={'14'} onClick={() => onChangeTaskQueryHandler('task_type', 'select', null)}/>
-                                    </label>
-                                    <Select
-                                        isClearable={false}
-                                        className='react-select'
-                                        classNamePrefix='select'
-                                        name="type"
-                                        options={typeDropdown ? typeDropdown : ''}
-                                        value={typeDropdown.find(option => option.value === query.task_type) || null}
-                                        onChange={ (e) => { onChangeTaskQueryHandler('task_type', 'select', e.value) }}
-                                    />
+                        <div className='row d-flex justify-content-between mb-1'>
+                        <div className='col-md-2' style={{minWidth:'200px'}}>
+                            <label className='form-label'>
+                                Type  <RefreshCcw color='darkblue' size={'14'} onClick={() => onChangeTaskQueryHandler('task_type', 'select', null)}/>
+                            </label>
+                            <Select
+                                isClearable={false}
+                                className='react-select'
+                                classNamePrefix='select'
+                                name="type"
+                                options={typeDropdown ? typeDropdown : ''}
+                                value={typeDropdown.find(option => option.value === query.task_type) || null}
+                                onChange={ (e) => { onChangeTaskQueryHandler('task_type', 'select', e.value) }}
+                            />
                         </div>
-                        <div className='mx-1' style={{minWidth:'200px'}}>
+                        <div className='col-md-2' style={{minWidth:'200px'}}>
                             <label className='form-label'>
                                 Status  <RefreshCcw color='darkblue' size={'14'} onClick={() => onChangeTaskQueryHandler('status', 'select', null)}/>
                             </label>
@@ -325,7 +325,7 @@ const index = () => {
                                 onChange={ (e) => { onChangeTaskQueryHandler('status', 'select', e.value) }}
                             />
                         </div>
-                        <div className='mx-1' style={{minWidth:'200px'}}>
+                        <div className='col-md-2' style={{minWidth:'200px'}}>
                             <label className='form-label'>
                                 Priority  <RefreshCcw color='darkblue' size={'14'} onClick={() => onChangeTaskQueryHandler('priority', 'select', null)}/>
                             </label>
@@ -339,7 +339,7 @@ const index = () => {
                                 onChange={ (e) => { onChangeTaskQueryHandler('priority', 'select', e.value) }}
                             />
                         </div>
-                        <div className='mx-1' style={{minWidth:'200px'}}>
+                        <div className='col-md-2' style={{minWidth:'200px'}}>
                             <label className='form-label'>
                                 Assignee  <RefreshCcw color='darkblue' size={'14'} onClick={() => onChangeTaskQueryHandler('assign_to', 'select', null)}/>
                             </label>
@@ -353,18 +353,15 @@ const index = () => {
                                 onChange={ (e) => { onChangeTaskQueryHandler('assign_to', 'select', e.value) }}
                             />
                         </div>
-                        <div>
-                        <Button color="primary" className="btn-next mt-2" onClick={applyFilters}>
-                            <span className="align-middle d-sm-inline-block">
-                            Apply
-                            </span>
-                            <Save
-                            size={14}
-                            className="align-middle ms-sm-25 ms-0"
-                            ></Save>
-                        </Button>
+                        <div className='col-md-2' style={{minWidth:'200px'}}>
+                            <Button color="primary" className="btn-next mt-2" onClick={applyFilters}>
+                                <span className="align-middle d-sm-inline-block">
+                                    Apply
+                                </span>
+                                <Save size={14} className="align-middle ms-sm-25 ms-0"></Save>
+                            </Button>
                         </div>
-                    </div>
+                    </div>                    
                     ) : <div className='text-center'><Spinner size={'16'} type='grow' color='blue'/></div>
                 )}
                 <hr></hr>

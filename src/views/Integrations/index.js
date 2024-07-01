@@ -1,37 +1,13 @@
 import React, {Children, useState} from 'react'
 import { Card, CardBody, CardTitle, Row, Col } from 'reactstrap'
 import { useHistory } from 'react-router-dom'
-import { Home, User, Book, Layers, Coffee, Users, Calendar, Clipboard, BookOpen, ArrowRight, Circle, Bookmark, Aperture, Award, Globe, Smile, File, DollarSign, Flag, PenTool } from 'react-feather'
+import { Home, User, Book, Layers, Coffee, Users, Calendar, Clipboard, BookOpen, ArrowRight, Circle, Bookmark, Aperture, Award, Globe, Smile, File, DollarSign, Flag, PenTool, Mail } from 'react-feather'
 const menuItems = [    
       {
-        id: 'Payroll-Configuration',
-        title: 'Payroll Configuration',
-        icon: <PenTool size={20} />,
-        navLink: '/payroll-configuration'
-      },   
-      {
-        id: 'Salary-permissions',
-        title: 'Salary Permissions',
-        icon: <Flag size={20} />,
-        navLink: '/salary-permissions'
-      },
-      {
-        id: 'Salary-Batch',
-        title: 'Salary Batch',
-        icon: <Clipboard size={20} />,
-        navLink: '/payroll/salarybatch'
-      },
-      {
-        id: 'Emp-Salary',
-        title: 'Emp Salary',
-        icon: <DollarSign size={20} />,
-        navLink: '/payroll/selectbatch'
-      }, 
-       {
-        id: 'Salary-Record',
-        title: 'Salary Record',
-        icon: <File size={20} />,
-        navLink: '/payroll/salary/batches'
+        id: 'email',
+        title: 'Mail',
+        icon: <Mail size={20} />,
+        navLink: '/email/connect'
       }
     ] 
 

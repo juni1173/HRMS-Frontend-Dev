@@ -222,6 +222,7 @@ const VerticalLayout = props => {
           </ScrollToTop>
         </div>
       ) : null}
+  
     </div>
   )
 }

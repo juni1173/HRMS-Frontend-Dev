@@ -2,7 +2,7 @@
   // import Table from './Table'
 
   // ** Reactstrap Imports
-  import { useState } from 'react'
+  import { useEffect, useState } from 'react'
   import { Link } from 'react-router-dom'
   import { Button, Row, Col, Card, CardHeader, CardBody, CardTitle, TabContent, TabPane, Nav, NavItem, NavLink, Offcanvas, OffcanvasHeader, OffcanvasBody, Spinner } from "reactstrap"
 
@@ -68,7 +68,9 @@
       setCount(current => current + 1)
 
     }
-
+    useEffect(() => {
+      getDashCount()
+    }, [])
     // Canvas Panel Checks for Components Call
 
     const Canvas = active => {
