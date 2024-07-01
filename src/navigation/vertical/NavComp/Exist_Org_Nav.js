@@ -238,6 +238,12 @@ let nav = []
   title: 'Work Models',
   icon: <Trello size={12} />,
   navLink: '/workmodels'
+},
+{
+  id: 'nav-reassignment',
+  title: 'Re-Assignment',
+  icon: <Trello size={12} />,
+  navLink: '/reassignment'
 }
 // {
 //   id: 'nav-dashboard',

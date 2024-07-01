@@ -426,6 +426,10 @@ const Routes = [
    {
     path: '/tasks',
     component: lazy(() => import('../../views/TasksModule/index'))
+  },
+  {
+    path: '/reassignment',
+    component: lazy(() => import('../../views/Promotions/index'))
   }
 ]
 

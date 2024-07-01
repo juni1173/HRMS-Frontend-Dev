@@ -43,6 +43,7 @@ setShowCanvas(!showCanvas)
   const transformData = (data) => {
     if (data && data.length > 0) {
     return data.map(item => ({
+      short_code:item.short_code,
       value: item.id,
       label: item.title
     }))
