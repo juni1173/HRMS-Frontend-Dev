@@ -4,7 +4,7 @@ import { Spinner, TabContent, TabPane, Nav, NavItem, NavLink, Row, Col} from "re
 import AddTicket from "./Components/AddTicket"
 import AssignedTickets from "./Components/Admin/AssignedTickets"
 import TransferTickets from "./Components/Admin/TransferTickets"
-import AssignedList from "./Components/AssignedList"
+// import AssignedList from "./Components/AssignedList"
 import LeadApprovals from "./Components/LeadApprovals"
 import TicketList from "./Components/TicketList"
 const TicketsModule = () => {
@@ -49,7 +49,7 @@ const TicketsModule = () => {
             setLoading(false)
         }, 1000)
     }
-   
+    
     useEffect(() => {
         getTicketData()
         }, [])
@@ -57,14 +57,29 @@ const TicketsModule = () => {
         const CallBack = useCallback(() => {
             getTicketData()
           }, [ticketData])
+          const status_choices = [
+            {value: 1, label: 'Pending'},
+            {value: 2, label:'In Progress by Team Lead'},
+            {value: 3, label: 'Rejected by Team Lead'},
+            {value: 4, label: 'Approved by Team Lead'},
+            // {value: 5, label: 'In Progress by CTO'},
+            // {value: 6, label: 'Rejected by CTO'},
+            // {value: 7, label: 'Approved by CTO'},
+            {value: 8, label: 'In Progress by Admin'},
+            {value: 9, label: 'Rejected by Admin'},
+            {value: 10, label: 'Solved by Admin'}
+            // {value: 11, label: 'In Progress by HR'},
+            // {value: 12, label: 'Reject by HR'},
+            // {value: 13, label: 'Solved by HR'}
+        ]
    return (
     <Fragment>
         <AddTicket CallBack={CallBack} toggle={toggle} active={active}/>
         
-            <TabContent className='py-50' activeTab={active}>
+            <TabContent className='' activeTab={active}>
             <TabPane tabId={'1'}>
                 {!loading ? (
-                    active === '1' ? <TicketList data={ticketData} CallBack={CallBack} type="tickets"/> : null
+                    active === '1' ? <TicketList data={ticketData} CallBack={CallBack} type="tickets" status_choices={status_choices}/> : null
                 ) : (
                     <div className="text-center"><Spinner/></div> 
                 )}

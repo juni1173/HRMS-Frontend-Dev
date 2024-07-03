@@ -259,13 +259,13 @@ const index = () => {
   return (
     <Fragment>
             <Card>
-                <CardBody className=''>
+                <CardBody className='pt-1'>
                     <Row>
                         <Col md="3">
-                            <h3>Task Management Panel</h3>
+                            <h3>Task Management</h3>
                         </Col>
                         <Col md="9">
-                            <Nav tabs className='mb-2'>
+                            <Nav tabs className='mb-0'>
                             {!loading ? (
                                     projects.map((item) => (
                                         <NavItem key={item.id}>

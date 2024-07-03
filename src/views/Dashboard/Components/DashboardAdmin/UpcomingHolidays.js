@@ -57,8 +57,8 @@ const UpcomingHolidays = ({ data }) => {
   }
 
   return (
-    <Card className='card-transaction p-0 cursor-pointer mb-1' onClick={toggleCardBody} style={{background: 'linear-gradient(to right, #870000, #190a05)'}}>
-      <CardHeader className='p-1'>
+    <Card className='card-transaction p-0 cursor-pointer mb-1'  style={{background: 'linear-gradient(to right, #870000, #190a05)'}}>
+      <CardHeader className='p-1' onClick={toggleCardBody}>
       <Badge pill style={{background: 'linear-gradient(to right, #870000, #190a05)'}} className='badge-up'>
           {data.length}
         </Badge>

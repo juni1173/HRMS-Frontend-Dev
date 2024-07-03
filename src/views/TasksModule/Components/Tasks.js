@@ -4,7 +4,7 @@ import PerfectScrollbar from 'react-perfect-scrollbar'
 import { Spinner, Row, Col, Badge, ListGroup, ListGroupItem, Button, Modal, ModalBody, ModalHeader, Dropdown, DropdownItem, DropdownMenu } from 'reactstrap'
 import AddTask from './AddTask'
 import TaskDetail from './TaskDetail'
-
+import { IoAddCircleOutline  } from "react-icons/io5"
 const Tasks = ({ data, projectsData, CallBack, selectedTaskid, project_id }) => {
     
         const [centeredModal, setCenteredModal] = useState(false)
@@ -45,19 +45,27 @@ const Tasks = ({ data, projectsData, CallBack, selectedTaskid, project_id }) => 
           <div className='todo-app-menu'>
             <Row style={{height: '400px'}}>
                 
-                <Col md={4} id='' className='border-right p-0' style={{backgroundColor: '#315180'}}>
-                <div className='add-task'>
+                <Col md={4} id='' className='border-right p-0' style={{backgroundColor: '#fff'}}>
+                <div className='add-task' style={{backgroundColor: '#eaf1ff'}}>
                     
-                    <div className='d-flex justify-content-between mb-2'>
+                    <div className='d-flex justify-content-between pb-2' style={{backgroundColor: '#eaf1ff'}}>
                         <div className='pt-1'>
-                        <Button color='success' onClick={handleAddClick} className='btn-sm float-left'>
+                        <button
+                                    className="border-0 no-background float-left"
+                                    title="Add new task"
+                                    style={{fontSize:'14px'}}
+                                    onClick={handleAddClick}
+                                    >
+                                    <IoAddCircleOutline  color="#315180" size={'18px'}/> New Task
+                                </button>
+                        {/* <Button color='success' onClick={handleAddClick} className='btn-sm float-left'>
                             <Plus size={'16'}/> Add Task
-                        </Button>
+                        </Button> */}
                         </div>
                         <div className='d-flex pt-1'>
                             <Dropdown  isOpen={dropdownOpen} toggle={() => toggleDropdown()} direction="" className='chart-dropdown'>
                                 {/* <DropdownToggle className="no-background m-0 px-0"> */}
-                                <div onClick={() => toggleDropdown()}><AlignRight size={'20'} color='white'/></div>
+                                <div onClick={() => toggleDropdown()}><AlignRight size={'20'}/></div>
                                 {/* </DropdownToggle> */}
                                 <DropdownMenu className='btn-sm border-0'>
                                 <DropdownItem className='w-100'>
@@ -112,7 +120,7 @@ const Tasks = ({ data, projectsData, CallBack, selectedTaskid, project_id }) => 
                             </ListGroupItem>
                         ))
                     ) : (
-                        <p className='text-center text-white'>No any task found!</p>
+                        <p className='text-center'>No any task found!</p>
                     )
             }
              

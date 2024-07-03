@@ -7,6 +7,7 @@ import EmployeeHelper from '../../../Helpers/EmployeeHelper'
 import Flatpickr from 'react-flatpickr'
 import '@styles/react/libs/flatpickr/flatpickr.scss'
 import Select from 'react-select'
+import { TbClockPlus, TbClockMinus  } from "react-icons/tb"
 
 const AttendanceCard = () => {
   const Api = apiHelper()
@@ -149,43 +150,45 @@ const Check_out = async () => {
 }
 
     return (
-        <Card className='attendance-card'>
+        <Card className='attendance-card' style={{background: 'linear-gradient(to right, #2c3e50, #3498db)'}}>
             <CardHeader>
-                <CardTitle tag='h4'>Attendance</CardTitle>
-                <a href='../attendancelist/'><Icon.ArrowRight size={18} className='cursor-pointer' /></a>
+                <CardTitle tag='h4' className='text-white'>Attendance</CardTitle>
+                <a href='../attendancelist/'><Icon.ArrowRight size={18} color='white' className='cursor-pointer' /></a>
             </CardHeader>
             {!loading ?   <CardBody>
                 <div className='d-flex justify-content-between align-items-center mb-3'>
                   
-                  <Col md={6}>
-                    <Button onClick={() => {
+                  <Col md={6} className='text-center'>
+                  <button class="button-47" role="button" onClick={() => {
                             setBtnStatus('check_in')
                             setCenteredModal(!centeredModal)
-                            }} className='btn btn-success'><Icon.Clock />Check In</Button>
+                            }}><TbClockPlus color='' size={'24'}/>  Check In</button>
+                  {/* <Button  className='btn'> </Button> */}
                     </Col>
-                    <Col md={6}>
-                    <Button onClick={() => {
+                    <Col md={6} className='text-center'>
+                        
+                     <button onClick={() => {
                             setBtnStatus('check_out')
                             setCenteredModal(!centeredModal)
-                            }} className='btn btn-success'><Icon.Clock/>Check Out</Button>
+                            }} className='button-47'><TbClockMinus color='' size={'24'}/> Check Out</button>
                     </Col>
                 </div>
-                <h4 className='transaction-title text-center'>{data && data.total_time}</h4>
+                <h4 className='transaction-title text-center text-white'>{data && data.total_time}</h4>
                 { data && data.data && data.data.length > 0 ? (
   data.data.map((item, index) => (
     <div className='text-center' key={index}>
-      <span className='text-dark'>Check In : </span>
-      <small className='pr-1'>{item.check_in ? item.check_in : 'Pending'}</small>
-      <span className='text-dark'>Check Out : </span>
-      <small>{item.check_out ? item.check_out : 'Pending'}</small>     
+      <span className='text-white'>Check In : </span>
+      <small className='pr-1 text-white'>{item.check_in ? item.check_in : 'Pending'}</small>
+      <span className='text-white'>Check Out : </span>
+      <small className='text-white'>{item.check_out ? item.check_out : 'Pending'}</small>     
     </div>
   ))
 ) : (
     <div className='text-center'>
-    <span className='text-dark'>Check In : </span>
-    <small className='pr-1'>Pending</small>
-    <span className='text-dark'>Check Out : </span>
-    <small>Pending</small>     
+    <span className='text-white'>Check In : </span>
+    <small className='pr-1 text-white' >Pending</small>
+    <span className='text-white'>Check Out : </span>
+    <small className='text-white'>Pending</small>     
   </div>
 )}
 
@@ -193,7 +196,7 @@ const Check_out = async () => {
                 {data && data.data && data.data.length <= 1 ? <><br/></> : null}
             </CardBody> : <div className="container h-100 d-flex justify-content-center">
         <div className="jumbotron my-auto">
-          <div className="display-3"><Spinner type='grow' color='primary'/></div>
+          <div className="display-3"><Spinner type='grow' color='white'/></div>
         </div>
     </div>}
             <Modal isOpen={centeredModal} toggle={() => setCenteredModal(!centeredModal)} className='modal-dialog-centered modal-lg'>

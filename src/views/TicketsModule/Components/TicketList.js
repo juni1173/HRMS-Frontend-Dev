@@ -1,19 +1,25 @@
 import {Fragment, useState} from 'react'
-import { Row, Col, Table, Spinner, Button, Badge, CardBody, Card, CardTitle, Offcanvas, OffcanvasHeader, OffcanvasBody } from 'reactstrap'
-import { Eye, Trash2 } from 'react-feather'
+import { Row, Col, InputGroup, InputGroupText, Input, Button, Badge, CardBody, Card, CardTitle, Offcanvas, OffcanvasHeader, OffcanvasBody } from 'reactstrap'
+import { Eye, Trash2, Search, RefreshCcw, Filter } from 'react-feather'
 import TicketDetails from './TicketDetails'
 import apiHelper from '../../Helpers/ApiHelper'
 import Swal from 'sweetalert2'
+import Select from "react-select"
 import withReactContent from 'sweetalert2-react-content'
 import { FaUserGear, FaUserTie  } from "react-icons/fa6"
 import { GrStatusInfo } from "react-icons/gr"
 import { MdCategory } from "react-icons/md"
-const TicketList = ({ data, CallBack }) => {
+const TicketList = ({ data, CallBack, status_choices }) => {
+    console.warn(data)
   const Api = apiHelper()
   const MySwal = withReactContent(Swal)
   const [canvasPlacement, setCanvasPlacement] = useState('end')
     const [canvasOpen, setCanvasOpen] = useState(false)
     const [UpdateData, setUpdateData] = useState([])
+    const [filterStatus, setFilterStatus] = useState(false)
+    const [searchResults, setSearchResults] = useState(data ? data : [])
+   
+
     const toggleCanvasEnd = () => {
       setCanvasPlacement('end')
       setCanvasOpen(!canvasOpen)
@@ -70,12 +76,68 @@ const TicketList = ({ data, CallBack }) => {
                   })
           } 
       })
-  }
+    }
+   
+    const filterClick = () => {
+        setFilterStatus(!filterStatus)
+    }
+   
+    const onSearch = (inputName, e) => {
+        if (e) {
+            if (inputName === 'subject') {
+                setSearchResults(data.filter(item => (item.subject).toLowerCase().includes((e.target.value).toLowerCase())))
+            }
+            if (inputName === 'ticket_status') {
+            setSearchResults(data.filter(item => item.ticket_status === e.value))
+            }
+        } else {
+            setSearchResults(data)
+        }
+    }
   return (
     <Fragment>
-    {data && Object.values(data).length > 0 ? (
+            <div className=' row '>
+                <Col md='12'>
+                <span onClick={filterClick} className='cursor-pointer float-right mb-1'><Filter color={filterStatus ? 'darkblue' : 'gray'} size={'18'} title="Filters"/> Filters </span>
+                </Col>
+                <Col md='12'>
+                {filterStatus && (
+                        <div className='row d-flex justify-content-center mb-1'>
+                        <div className='col-md-2' style={{minWidth:'200px'}}>
+                            <label className='form-label'>
+                                Search by Subject  <RefreshCcw color='darkblue' size={'14'} onClick={() => onSearch('subject', null)}/>
+                            </label>
+                            <InputGroup className='input-group-merge mb-2'>
+                                <InputGroupText>
+                                    <Search size={14} />
+                                </InputGroupText>
+                                <Input placeholder='search by title...'  onChange={e => { onSearch('subject', e) } }/>
+                            </InputGroup>
+                        </div>
+                        <div className='col-md-2' style={{minWidth:'200px'}}>
+                            <label className='form-label'>
+                                Status  
+                            </label>
+                            <Select
+                                isClearable={true}
+                                className='react-select'
+                                classNamePrefix='select'
+                                name="status"
+                                options={status_choices ? status_choices : ''}
+                                // value={status_choices.find(option => option.value === query.status) || null}
+                                onChange={ (e) => { onSearch('ticket_status', e) }}
+                            />
+                        </div>
+                    </div>                    
+                    
+                )}
+                </Col>
+                
+            </div>
+      
+    {searchResults && Object.values(searchResults).length > 0 ? (
         <div className="row">
-             {Object.values(data).map((item, key) => (
+             {Object.values(searchResults).map((item, key) => (
                                     <Col md={6} className='' key={key}>
                                         <Card bg="light" style={{ backgroundColor: '#F2F3F4' }} className='text-nowrap'>    
                                             <CardBody>
@@ -101,7 +163,7 @@ const TicketList = ({ data, CallBack }) => {
                                                     </Col>
                                                     <Col md={4} className="">
                                                         <p>{item.ticket_status === 1 && <Trash2 className="float-right" color='red' onClick={() => deleteAction(item.id)}/>}</p><br></br>
-                                                        <span style={{color: '#808080b5'}} className="float-right">{Api.formatDateDifference(item.updated_at)}</span>
+                                                        <span style={{color: '#808080b5'}} className="float-right">{Api.formatDateDifference(item.created_at)}</span>
                                                     </Col>
                                                     
                                                 </Row>

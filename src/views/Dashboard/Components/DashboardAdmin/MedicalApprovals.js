@@ -57,8 +57,8 @@ const MedicalApprovals = ({ data }) => {
   }
 
   return (
-    <Card className='card-transaction cursor-pointer mb-1' onClick={toggleCardBody} style={{background: 'linear-gradient(to right, #2c3e50, #3498db)'}}>
-      <CardHeader className='p-1'>
+    <Card className='card-transaction cursor-pointer mb-1' style={{background: 'linear-gradient(to right, #2c3e50, #3498db)'}}>
+      <CardHeader className='p-1' onClick={toggleCardBody}>
       <Badge pill style={{background: 'linear-gradient(to right, #2c3e50, #3498db)'}} className='badge-up'>
           {data.length}
         </Badge>

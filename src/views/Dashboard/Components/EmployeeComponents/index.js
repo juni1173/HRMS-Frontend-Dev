@@ -2,7 +2,7 @@
 import { Fragment, useState, useEffect } from 'react'
 import { Row, Col, Card, CardBody, CardText } from 'reactstrap'
 // import welcomeImage from '@src/assets/images/illustration/dashboard_image.svg'
-import welcomeImage from '@src/assets/images/illustration/email.svg'
+// import welcomeImage from '@src/assets/images/illustration/email.svg'
 // ** Images
 import UpcomingHolidays from './UpcomingHolidays'
 import UpcomingLeaves from './UpcomingLeaves'
@@ -10,6 +10,7 @@ import MedicalApprovals from './MedicalApprovals'
 import apiHelper from '../../../Helpers/ApiHelper'
 import GymApprovals from './GymApprovals'
 import AttendanceCard from './AttendanceCalendar'
+import TasksModule from '../../../TasksModule/index'
 const EmployeeDash = () => {
     const Api = apiHelper()
     const [data, setData] = useState([])
@@ -33,7 +34,22 @@ const EmployeeDash = () => {
       }, [])
   return (
     <Fragment>
+        {(!loading) && (
         <Row>
+            <Col md='4'>
+                <AttendanceCard data={data.upcoming_holiday ? data.upcoming_holiday : []}/>
+                <UpcomingHolidays data={data.upcoming_holiday ? data.upcoming_holiday : []}/>
+                <UpcomingLeaves data={data.Leaves_count ? data.Leaves_count : []}/>
+                <MedicalApprovals data={data.medical ? data.medical : []} medical_count={data.medical_count ? data.medical_count : {}}/>
+                <GymApprovals data={data.gym ? data.gym : []}/>
+            </Col>
+            <Col md='8'>
+                <TasksModule />
+            </Col>
+            
+        </Row>
+        )}
+        {/* <Row>
             <Col md="8">
                 <Card className='card-congratulations-medal card-congratulations' style={{height:'250px'}}>
                 <CardBody>
@@ -64,7 +80,7 @@ const EmployeeDash = () => {
                             </Col>
                         </>
                     )}
-        </Row>
+        </Row> */}
     </Fragment>
   )
 }
