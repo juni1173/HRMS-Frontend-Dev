@@ -16,6 +16,7 @@ const ApprovalFlow = () => {
   const [showCanvas, setShowCanvas] = useState(false)
   const [selectedModel, setSelectedModel] = useState()
   const [employees, setEmployees] = useState([])
+  const [evaluations, setevaluations] = useState([])
    
   const fetchFlowData = async () => {
         setisloading(true)
@@ -80,6 +81,11 @@ setShowCanvas(!showCanvas)
             setEmployees(result)
           })
         }
+        if (evaluations.length === 0) {
+          EmpHelper.fetchEvaluationDropdown().then(result => {
+            setevaluations(result)
+          })
+        }
   }, [])
 
   return (
@@ -94,7 +100,8 @@ setShowCanvas(!showCanvas)
             <CardBody>
 <CreateFlow dropdownData = {{
     categories : categoriesData,
-     employees
+     employees,
+     evaluation_data: evaluations
 }} CallBack={CallBack} approval_unit={approvalUnit}/>
             </CardBody>
           </Card>

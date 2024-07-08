@@ -15,36 +15,35 @@ const CreateFlow = ({ dropdownData, CallBack, approval_unit }) => {
   const Api = apiHelper()
 
   const handleUnitDetailChange = (unitId, field, value) => {
-    setUnitDetails((prevDetails) => ({
+    setUnitDetails(prevDetails => ({
       ...prevDetails,
       [unitId]: {
         ...prevDetails[unitId],
-        unit: unitId, // Ensure unit field is set
+        unit: unitId,
         [field]: value
       }
     }))
   }
 
   const handleVetoChange = (unitId, isChecked) => {
-    const updatedDetails = { ...unitDetails }
-
-    if (isChecked) {
-      Object.keys(updatedDetails).forEach((id) => {
-        if (id !== unitId) {
-          updatedDetails[id] = { ...updatedDetails[id], is_veto: false }
-        }
-      })
-    }
-
-    updatedDetails[unitId] = {
-      ...updatedDetails[unitId],
-      is_veto: isChecked
-    }
-
-    setUnitDetails(updatedDetails)
+    setUnitDetails(prevDetails => {
+      const updatedDetails = { ...prevDetails }
+      if (isChecked) {
+        Object.keys(updatedDetails).forEach(id => {
+          if (id !== unitId) {
+            updatedDetails[id] = { ...updatedDetails[id], is_veto: false }
+          }
+        })
+      }
+      updatedDetails[unitId] = {
+        ...updatedDetails[unitId],
+        is_veto: isChecked
+      }
+      return updatedDetails
+    })
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = e => {
     e.preventDefault()
     const formData = {
       title,
@@ -53,9 +52,8 @@ const CreateFlow = ({ dropdownData, CallBack, approval_unit }) => {
       category: category ? category.value : null,
       unit_details: unitDetails
     }
-    // Submit formData to the API
     Api.jsonPost('/approval/approvalflow/', formData)
-      .then((response) => {
+      .then(response => {
         if (response.status === 200) {
           Api.Toast('success', 'Created successfully')
           CallBack()
@@ -63,19 +61,18 @@ const CreateFlow = ({ dropdownData, CallBack, approval_unit }) => {
           Api.Toast('error', 'Failed to create')
         }
       })
-      .catch((error) => {
+      .catch(error => {
         Api.Toast('error', error)
       })
   }
 
-  const renderConditionalFields = (selectedUnit) => {
+  const renderConditionalFields = selectedUnit => {
     const unitId = selectedUnit.value
     const shortCode = category?.short_code
-    console.log(category)
-    console.log(shortCode)
+
     return (
       <>
-        {shortCode === 'PD' && (
+        {shortCode === 'Evaluation' && (
           <>
             <Col md='6' className='mb-1'>
               <Label for={`weightage-${unitId}`}>Weightage</Label>
@@ -85,50 +82,50 @@ const CreateFlow = ({ dropdownData, CallBack, approval_unit }) => {
                 id={`weightage-${unitId}`}
                 placeholder='Enter Weightage'
                 value={unitDetails[unitId]?.weightage || ''}
-                onChange={(e) => handleUnitDetailChange(unitId, 'weightage', e.target.value)}
-                required
+                onChange={e => handleUnitDetailChange(unitId, 'weightage', e.target.value)}
+                // required
               />
             </Col>
             <Col md='6' className='mb-1'>
-                <Label check>
-                  <Input
-                    type="checkbox"
-                    checked={unitDetails[selectedUnit.value]?.is_fixed || false}
-                    onChange={(e) => handleUnitDetailChange(selectedUnit.value, 'is_weightage_fixed', e.target.checked)}
-                  />{' '}
-                    Is Weightage Fixed
-                </Label>
-              </Col>
-            <Col md='6' className='mb-1'>
               <Label for={`evaluation-${unitId}`}>Select Evaluation</Label>
               <Select
-                options={dropdownData.categories}
+                options={dropdownData.evaluation_data}
                 id={`evaluation-${unitId}`}
-                value={dropdownData.categories.find(evaluation => evaluation.value === unitDetails[unitId]?.evaluation) || null}
-                onChange={(selectedOption) => handleUnitDetailChange(unitId, 'evaluation', selectedOption.value)}
+                value={dropdownData.evaluation_data.find(evaluation => evaluation.value === unitDetails[unitId]?.evaluation) || null}
+                onChange={selectedOption => handleUnitDetailChange(unitId, 'evaluation', selectedOption.value)}
                 classNamePrefix='select'
                 placeholder="Select Evaluation"
               />
             </Col>
-            <Col md='6' className='mb-1'>
-                <Label check>
-                  <Input
-                    type="checkbox"
-                    checked={unitDetails[selectedUnit.value]?.is_fixed || false}
-                    onChange={(e) => handleUnitDetailChange(selectedUnit.value, 'is_evaluation_fixed', e.target.checked)}
-                  />{' '}
-                    Is evaluation Fixed
-                </Label>
-              </Col>
+            <Col md='4' className='mb-1'>
+              <Label check>
+                <Input
+                  type="checkbox"
+                  checked={unitDetails[unitId]?.is_weightage_fixed || false}
+                  onChange={e => handleUnitDetailChange(unitId, 'is_weightage_fixed', e.target.checked)}
+                />{' '}
+                Is Weightage Fixed
+              </Label>
+            </Col>
+            <Col md='4' className='mb-1'>
+              <Label check>
+                <Input
+                  type="checkbox"
+                  checked={unitDetails[unitId]?.is_evaluation_fixed || false}
+                  onChange={e => handleUnitDetailChange(unitId, 'is_evaluation_fixed', e.target.checked)}
+                />{' '}
+                Is Evaluation Fixed
+              </Label>
+            </Col>
           </>
         )}
         {(shortCode === 'LR' || shortCode === 'WR') && (
-          <Col md='6' className='mb-1'>
+          <Col md='4' className='mb-1'>
             <Label check>
               <Input
                 type="checkbox"
                 checked={unitDetails[unitId]?.is_veto || false}
-                onChange={(e) => handleVetoChange(unitId, e.target.checked)}
+                onChange={e => handleVetoChange(unitId, e.target.checked)}
               />{' '}
               Has Veto
             </Label>
@@ -150,7 +147,7 @@ const CreateFlow = ({ dropdownData, CallBack, approval_unit }) => {
               id="title"
               placeholder='Title'
               value={title}
-              onChange={(e) => setTitle(e.target.value)}
+              onChange={e => setTitle(e.target.value)}
               required
             />
           </Col>
@@ -161,7 +158,7 @@ const CreateFlow = ({ dropdownData, CallBack, approval_unit }) => {
               id="shortCode"
               placeholder='Short Code'
               value={shortCode}
-              onChange={(e) => setShortCode(e.target.value)}
+              onChange={e => setShortCode(e.target.value)}
               required
             />
           </Col>
@@ -182,7 +179,7 @@ const CreateFlow = ({ dropdownData, CallBack, approval_unit }) => {
               id="description"
               placeholder='Description'
               value={description}
-              onChange={(e) => setDescription(e.target.value)}
+              onChange={e => setDescription(e.target.value)}
               required
             />
           </Col>
@@ -206,7 +203,7 @@ const CreateFlow = ({ dropdownData, CallBack, approval_unit }) => {
                   id={`unit-${selectedUnit.value}`}
                   placeholder='Enter Level'
                   value={unitDetails[selectedUnit.value]?.level || ''}
-                  onChange={(e) => handleUnitDetailChange(selectedUnit.value, 'level', e.target.value)}
+                  onChange={e => handleUnitDetailChange(selectedUnit.value, 'level', e.target.value)}
                   required
                 />
               </Col>
@@ -216,23 +213,22 @@ const CreateFlow = ({ dropdownData, CallBack, approval_unit }) => {
                   options={dropdownData.employees}
                   id={`employee-${selectedUnit.value}`}
                   value={dropdownData.employees.find(emp => emp.value === unitDetails[selectedUnit.value]?.employee) || null}
-                  onChange={(selectedOption) => handleUnitDetailChange(selectedUnit.value, 'employee', selectedOption.value)}
+                  onChange={selectedOption => handleUnitDetailChange(selectedUnit.value, 'employee', selectedOption.value)}
                   classNamePrefix='select'
                   placeholder="Select Employee"
                 />
               </Col>
               {renderConditionalFields(selectedUnit)}
-              <Col md='6' className='mb-1'>
+              <Col md='4' className='mb-1'>
                 <Label check>
                   <Input
                     type="checkbox"
-                    checked={unitDetails[selectedUnit.value]?.is_fixed || false}
-                    onChange={(e) => handleUnitDetailChange(selectedUnit.value, 'is_fixed', e.target.checked)}
+                    checked={unitDetails[selectedUnit.value]?.is_employee_fixed || false}
+                    onChange={e => handleUnitDetailChange(selectedUnit.value, 'is_employee_fixed', e.target.checked)}
                   />{' '}
-                    Is Employee Fixed
+                  Is Employee Fixed
                 </Label>
               </Col>
-              
             </React.Fragment>
           ))}
           <Col md='4'>

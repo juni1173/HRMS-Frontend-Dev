@@ -434,6 +434,14 @@ const Routes = [
   {
     path: '/reassignment',
     component: lazy(() => import('../../views/Promotions/index'))
+  },
+  {
+    path: '/employee/reassignment',
+    component: lazy(() => import('../../views/Promotions/EmployeePromotion/index'))
+  },
+  {
+    path: '/evaluationform',
+    component: lazy(() => import('../../views/EvaluationForm/index'))
   }
 ]
 

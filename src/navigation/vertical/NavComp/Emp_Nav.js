@@ -159,7 +159,7 @@ let nav = []
     id: 'nav-reassignment',
     title: 'Re-Assignment',
     icon: <Trello size={12} />,
-    navLink: '/reassignment'
+    navLink: '/employee/reassignment'
   }
 //   {
 //     id: 'nav-roles-permissions',
