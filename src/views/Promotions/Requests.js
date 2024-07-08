@@ -23,33 +23,34 @@ import {
   Table,
   Nav,
   NavItem,
-  NavLink
+  NavLink,
+  Spinner
 } from 'reactstrap'
 import moment from 'moment'
 import apiHelper from '../Helpers/ApiHelper'
+import EmployeeHelper from '../Helpers/EmployeeHelper'
 
-const Request = ({employees}) => {
+const Request = ({ employees, evaluations }) => {
+  const EmpHelper = EmployeeHelper()
   const [data, setData] = useState({
-        evaluators: {} // Add evaluators to handle dynamic selection
+    evaluators: {} // Add evaluators to handle dynamic selection
   })
   const Api = apiHelper()
   const [approvaldata, setApprovalData] = useState([])
   const [hierarchyData, setHierarchyData] = useState([])
-  const [requestData, setrequestData] = useState([])
+  const [requestData, setRequestData] = useState([])
   const [selectedApprovalId, setSelectedApprovalId] = useState(null)
   const [expandedId, setExpandedId] = useState(null)
-  const [modalEvaluationStarted, setModalEvaluationStarted] = useState(false)
   const [modalAssignApprovalFlow, setModalAssignApprovalFlow] = useState(false)
-//   const [employees, setEmployees] = useState([])
+  const [isLoading, setIsLoading] = useState(true)
 
-const fetchApprovalFlow = async () => {
-    console.log(selectedApprovalId)
+  const fetchApprovalFlow = async () => {
     try {
       const result = await Api.get('/approval/approvalflow/')
       if (result.status === 200) {
         const options = result.data.map(item => ({
           value: item.id,
-          label: item.title
+          label: `${item.title} - ${item.short_code}`
         }))
         setApprovalData(options)
       }
@@ -57,10 +58,12 @@ const fetchApprovalFlow = async () => {
       console.error('Error fetching approval flow:', error)
     }
   }
+
   useEffect(() => {
     fetchApprovalFlow()
   }, [])
-  const  onchangeapprovaldatahandler = async (name, type, e) => {
+
+  const onchangeapprovaldatahandler = async (name, type, e) => {
     if (name === "approval_flow") {
       setSelectedApprovalId(e.value)
       try {
@@ -85,25 +88,12 @@ const fetchApprovalFlow = async () => {
     }
   }
 
-  const toggleEvaluationStartedModal = () => {
-    setModalEvaluationStarted(!modalEvaluationStarted)
-  }
-
-  const toggleAssignApprovalFlowModal = () => {
+  const toggleAssignApprovalFlowModal = (request_id) => {
+    setExpandedId(request_id)
     setModalAssignApprovalFlow(!modalAssignApprovalFlow)
   }
 
-//   const handleEvaluationStarted = (requestId) => {
-//     console.log(`Mark evaluation started for request ${requestId}`)
-//     toggleEvaluationStartedModal()
-//   }
-
-  const handleAssignApprovalFlow = (requestId) => {
-    console.log(`Assign approval flow for request ${requestId}`)
-    toggleAssignApprovalFlowModal()
-  }
-
-const onChangePromotionDataHandler = (InputName, InputType, e) => {
+  const onChangePromotionDataHandler = (InputName, InputType, e) => {
     let InputValue
     if (InputType === 'input') {
       InputValue = e.target.value
@@ -132,43 +122,86 @@ const onChangePromotionDataHandler = (InputName, InputType, e) => {
       }))
     }
   }
-  const handleSubmitHierarchy = async () => {
-   console.log(data)
-   const hierarchydata = hierarchyData.map(item => {
-    const evaluatorUnit = Object.keys(data.evaluators).find(unit => unit === item.unit_title)
-    const selectedEvaluator = evaluatorUnit ? data.evaluators[evaluatorUnit].value : null
-    
-    return {
-      unit_id: item.id,
-      unit_title: item.unit_title,
-      evaluator: item.is_fixed ? item.employee : selectedEvaluator,
-      is_fixed: item.is_fixed
-    }
-  })
-  console.log(hierarchydata)
-  }
-  
-  const fetchdata = async() => {
-    const result  = await Api.get('/promotion/request/')
+
+  const fetchData = async () => {
+    setIsLoading(true)
+    const result = await Api.get('/promotion/request/')
     if (result) {
-        if (result.status === 200) {
-            setrequestData(result.data.other_requests)
-        } else {
-            Api.Toast('error', result.message)
-        }
+      if (result.status === 200) {
+        setRequestData(result.data.other_requests)
+      } else {
+        Api.Toast('error', result.message)
+      }
     } else {
-        Api.Toast('error', 'unable to fetch')
+      Api.Toast('error', 'unable to fetch')
+    }
+    setIsLoading(false)
+  }
+
+  const handleSubmitHierarchy = async (request_id) => {
+    setIsLoading(true)
+    const hierarchydata = hierarchyData.map(item => {
+      const evaluatorUnit = Object.keys(data.evaluators).find(unit => unit === item.unit_title)
+      const selectedEvaluator = evaluatorUnit ? data.evaluators[evaluatorUnit].value : null
+
+      return {
+        unit_id: item.id,
+        unit_title: item.unit_title,
+        evaluator: item.is_fixed ? item.employee : selectedEvaluator,
+        is_fixed: item.is_fixed,
+        weightage: item.is_weightage_fixed ? item.weightage : data[`weightage_${item.unit_title}`],
+        evaluation: item.is_evaluation_fixed ? item.evaluation : (data[`evaluation_${item.unit_title}`] ? data[`evaluation_${item.unit_title}`].value : null)
+      }
+    })
+    const formData = new FormData()
+    formData['approval_flow'] = selectedApprovalId
+    formData['hierarchy_data'] = JSON.stringify(hierarchydata)
+
+    const result = await Api.jsonPatch(`/promotion/request/update/${request_id}/`, formData)
+    if (result) {
+      if (result.status === 200) {
+        Api.Toast('success', result.message)
+        fetchData()
+      } else {
+        Api.Toast('error', result.message)
+        setIsLoading(false)
+      }
+    } else {
+      Api.Toast('error', 'Unable to update data')
+      setIsLoading(false)
+    }
+  }
+
+  const startEvaluation = async (request_id) => {
+    setIsLoading(true)
+    const formData = new FormData()
+    formData['is_evaluation_started'] = true
+
+    const result = await Api.jsonPatch(`/promotion/request/update/${request_id}/`, formData)
+    if (result) {
+      if (result.status === 200) {
+        fetchData()
+        Api.Toast('success', result.message)
+      } else {
+        Api.Toast('error', result.message)
+        setIsLoading(false)
+      }
+    } else {
+      Api.Toast('error', 'Unable to update data')
+      setIsLoading(false)
     }
   }
 
   useEffect(() => {
-    fetchdata()
+    fetchData()
   }, [])
+
   const [activeTab, setActiveTab] = useState(0)
 
   const toggleTab = (tabIndex) => {
     if (activeTab !== tabIndex) setActiveTab(tabIndex)
   }
+
   const renderApprovalMessage = () => {
     if (hierarchyData && hierarchyData.length > 0) {
       return (
@@ -194,7 +227,7 @@ const onChangePromotionDataHandler = (InputName, InputType, e) => {
                     <tr>
                       <td>{item.unit_title} {item.employee_name ? `(${item.employee_name})` : ''}</td>
                     </tr>
-                    {item.is_fixed === false && (
+                    {item.is_fixed === false ? (
                       <tr>
                         <td>Correspondent Selection:</td>
                         <td>
@@ -204,9 +237,55 @@ const onChangePromotionDataHandler = (InputName, InputType, e) => {
                             type="text"
                             name={`evaluator_${item.unit_title}`}
                             options={employees}
+                            defaultValue={employees.find(emp => emp.value === item.employee)} // Set the initial value
                             onChange={(e) => onChangePromotionDataHandler(`evaluator_${item.unit_title}`, 'select', e)}
                           />
                         </td>
+                      </tr>
+                    ) : (
+                      <tr>
+                        <td>Correspondent:</td>
+                        <td>{employees.find(emp => emp.value === item.selected_evaluator)?.label || 'Not selected'}</td>
+                      </tr>
+                    )}
+                    {item.is_weightage_fixed === false ? (
+                      <tr>
+                        <td>Weightage:</td>
+                        <td>
+                          <Input
+                            type="number"
+                            name={`weightage_${item.unit_title}`}
+                            defaultValue={item.weightage} // Set the initial value
+                            onChange={(e) => onChangePromotionDataHandler(`weightage_${item.unit_title}`, 'input', e)}
+                          />
+                        </td>
+                      </tr>
+                    ) : (
+                      <tr>
+                        <td>Weightage:</td>
+                        <td>{item.weightage}</td>
+                      </tr>
+                    )}
+                    {item.is_evaluation_fixed === false ? (
+                      <tr>
+                        <td>Evaluation:</td>
+                        <td>
+                          You can select the correspondent Evaluation for {item.unit_title}
+                          <br />
+                          <Select
+                            type="text"
+                            name={`evaluation_${item.unit_title}`}
+                            options={evaluations}
+                            placeholder='select evaluation'
+                            defaultValue={evaluations.find(evalItem => evalItem.value === item.evaluation)} // Set the initial value
+                            onChange={(e) => onChangePromotionDataHandler(`evaluation_${item.unit_title}`, 'select', e)}
+                          />
+                        </td>
+                      </tr>
+                    ) : (
+                      <tr>
+                        <td>Evaluation:</td>
+                        <td>{evaluations.find(evalItem => evalItem.value === item.evaluation)?.label || 'Not selected'}</td>
                       </tr>
                     )}
                   </tbody>
@@ -219,81 +298,67 @@ const onChangePromotionDataHandler = (InputName, InputType, e) => {
     }
     return null
   }
+
   return (
     <Container fluid>
       <h1 className="text-center my-4">Promotion Requests</h1>
-      <Row>
-        {requestData.map(request => (
-          <Col key={request.id} xs="12" sm="6" md="4" className="mb-4">
-            <Card className="h-100 border-primary">
-              <CardBody>
-                <CardTitle tag="h5">{request.employee_name}</CardTitle>
-                <CardText>
-                  <strong>Type:</strong> {request.type_title}<br />
-                  <strong>Reason:</strong> {request.reason_title || request.custom_reason || 'Not specified'}<br />
-                  <strong>Status:</strong> <Badge color="info">{request.status}</Badge><br />
-                  <strong>Requested On:</strong> {moment(request.created_at).format('LLL')}<br />
-                  {request.effective_date && <><strong>Effective Date:</strong> {moment(request.effective_date).format('LL')}<br /></>}
-                  <strong>Evaluation Started:</strong> {request.is_evaluation_started ? 'Yes' : 'No'}
-                  {!request.is_evaluation_started && (
-                    <>
-                      <br />
-                      {!request.approval_flow ? (
-                        <Button color="link" size="sm" onClick={() => toggleAssignApprovalFlowModal(request.id)}>Assign Approval Flow</Button>
-                      ) : (
-                        <Button color="link" size="sm" onClick={() => toggleEvaluationStartedModal(request.id)}>Mark as Evaluation Started</Button>
-                      )}
-                    </>
-                  )}
-                </CardText>
-                <div className="text-center">
-                  <Button
-                    color="primary"
-                    size="sm"
-                    onClick={() => toggleExpand(request.id)}
-                  >
-                    {expandedId === request.id ? 'Collapse' : 'Expand Details'}
-                  </Button>
-                </div>
-                {expandedId === request.id && (
-                  <div className="mt-3">
-                    <hr />
-                    <CardText>
-                      <strong>Details:</strong><br />
-                      <strong>HR Request:</strong> {request.is_hr_request ? 'Yes' : 'No'}<br />
-                      <strong>Team Lead Request:</strong> {request.is_team_lead_request ? 'Yes' : 'No'}<br />
-                      <strong>Custom Reason:</strong> {request.custom_reason || 'Not specified'}<br />
-                    </CardText>
+      {isLoading ? (
+        <div className="container h-100 d-flex justify-content-center">
+          <div className="jumbotron my-auto">
+            <div className="display-3"><Spinner type='grow' color='primary' /></div>
+          </div>
+        </div>
+      ) : requestData.length === 0 ? (
+        <Card>
+          <CardBody>
+            <div className='text-center'><p>No data found...</p></div>
+          </CardBody>
+        </Card>
+      ) : (
+        <Row>
+          {requestData.map(request => (
+            <Col key={request.id} xs="12" sm="6" md="4" className="mb-4">
+              <Card className="h-100 border-primary">
+                <CardBody>
+                  <CardTitle tag="h5">{request.employee_name}</CardTitle>
+                  <CardText>
+                    <strong>Type:</strong> {request.type_title}<br />
+                    <strong>Reason:</strong> {request.reason_title || request.custom_reason || 'Not specified'}<br />
+                    <strong>Status:</strong> <Badge color="info">{request.status}</Badge><br />
+                    <strong>Requested On:</strong> {moment(request.created_at).format('LLL')}<br />
+                    {request.effective_date && <><strong>Effective Date:</strong> {moment(request.effective_date).format('LL')}<br /></>}
+                    <strong>Evaluation Started:</strong> {request.is_evaluation_started ? 'Yes' : 'No'}
+                    {!request.approval_flow || request.approval_flow === null ? <Button color="link" size="sm" onClick={() => toggleAssignApprovalFlowModal(request.id)}>Assign Approval Flow</Button> : null}
+                    {!request.is_evaluation_started ? <Button color="link" size="sm" onClick={() => startEvaluation(request.id)}>Mark as Evaluation Started</Button> : null}
+                  </CardText>
+                  <div className="text-center">
+                    <Button
+                      color="primary"
+                      size="sm"
+                      onClick={() => toggleExpand(request.id)}
+                    >
+                      {expandedId === request.id ? 'Collapse' : 'Expand Details'}
+                    </Button>
                   </div>
-                )}
-              </CardBody>
-            </Card>
-          </Col>
-        ))}
-      </Row>
+                  {expandedId === request.id && (
+                    <div className="mt-3">
+                      <hr />
+                      <CardText>
+                        <strong>Details:</strong><br />
+                        <strong>HR Request:</strong> {request.is_hr_request ? 'Yes' : 'No'}<br />
+                        <strong>Team Lead Request:</strong> {request.is_team_lead_request ? 'Yes' : 'No'}<br />
+                        <strong>Custom Reason:</strong> {request.custom_reason || 'Not specified'}<br />
+                      </CardText>
+                    </div>
+                  )}
+                </CardBody>
+              </Card>
+            </Col>
+          ))}
+        </Row>
+      )}
 
       {/* Modal for Evaluation Started */}
-      <Modal isOpen={modalEvaluationStarted} toggle={toggleEvaluationStartedModal}>
-        <ModalHeader toggle={toggleEvaluationStartedModal}>Mark Evaluation Started</ModalHeader>
-        <ModalBody>
-          <Form>
-            <FormGroup>
-              <Label for="approvalFlowSelect">Select Approval Flow</Label>
-              <Select
-                id="approvalFlowSelect"
-                name="approvalFlowSelect"
-                options={approvaldata}
-                onChange={(e) => onchangeapprovaldatahandler('approval_flow', 'select', e)}
-              />
-            </FormGroup>
-            {renderApprovalMessage()}
-          </Form>
-        </ModalBody>
-        <ModalFooter>
-          <Button color="primary" onClick={handleSubmitHierarchy}>Submit</Button>{' '}
-          <Button color="secondary" onClick={toggleEvaluationStartedModal}>Cancel</Button>
-        </ModalFooter>
-      </Modal>
 
       {/* Modal for Assign Approval Flow */}
       <Modal isOpen={modalAssignApprovalFlow} toggle={toggleAssignApprovalFlowModal}>
@@ -310,10 +375,11 @@ const onChangePromotionDataHandler = (InputName, InputType, e) => {
                 onChange={(e) => onchangeapprovaldatahandler('approval_flow', 'select', e)}
               />
             </FormGroup>
+            {renderApprovalMessage()}
           </Form>
         </ModalBody>
         <ModalFooter>
-          <Button color="primary" onClick={() => handleAssignApprovalFlow(expandedId)}>Submit</Button>{' '}
+          <Button color="primary" onClick={() => handleSubmitHierarchy(expandedId)}>Submit</Button>{' '}
           <Button color="secondary" onClick={toggleAssignApprovalFlowModal}>Cancel</Button>
         </ModalFooter>
       </Modal>

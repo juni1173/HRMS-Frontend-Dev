@@ -9,8 +9,9 @@ const Promotion = () => {
   const Api = apiHelper()  
   const EmpHelper = EmployeeHelper()
   const [employees, setEmployees] = useState([])
+  const [evaluations, setEvaluations] = useState([])
   const [reasonData, setReasonData] = useState([])
-  const [typeData, settypeData] = useState([])
+//   const [typeData, settypeData] = useState([])
 
     const [promotionData, setPromotionData] = useState({
         employee: null,
@@ -53,7 +54,7 @@ const Promotion = () => {
     const handleSubmit = async(event) => {
         event.preventDefault()
         console.log(promotionData)
-        // const formData = new FormData()
+        const formData = new FormData()
         formData['employee'] = promotionData.employee.value
         if (promotionData.reason.value === 'custom') {
             formData['reason'] = null
@@ -62,7 +63,7 @@ const Promotion = () => {
         } else {
             formData['reason'] = promotionData.reason.value
         }
-        formData['type'] = promotionData.type.value 
+        // formData['type'] = promotionData.type.value 
         // formData['approval_flow'] = promotionData.approval_flow.value
         const result = await Api.jsonPost('/promotion/request/', formData)
         if (result.status === 200) {
@@ -73,10 +74,10 @@ const Promotion = () => {
         }
     }
     const predata = async() => {
-        const formData = new FormData()
-        formData['type'] =  promotionData.type.value
+        // const formData = new FormData()
+        // formData['type'] =  promotionData.type.value
     
-        const result = await Api.jsonPost('/promotion/pre/data/', formData)
+        const result = await Api.jsonPost('/promotion/pre/data/')
         if (result.status === 200) {
             const options = result.data.reason_data.map(item => ({
                 value: item.id,
@@ -86,21 +87,19 @@ const Promotion = () => {
             setReasonData(options)
         }
     }
-    const fetchtypes = async() => {
-        const result = await Api.get('/promotiontype/')
-        if (result.status === 200) {
-            const options = result.data.map(item => ({
-                value: item.id,
-                label: item.title
-            }))
-            settypeData(options)
-        }
-    }
+    // const fetchtypes = async() => {
+    //     const result = await Api.get('/promotiontype/')
+    //     if (result.status === 200) {
+    //         const options = result.data.map(item => ({
+    //             value: item.id,
+    //             label: item.title
+    //         }))
+    //         settypeData(options)
+    //     }
+    // }
     useEffect(() => {
-        if (promotionData.type) {
             predata()
-        }
-    }, [promotionData.type])
+    }, [])
     
     useEffect(() => {
         if (employees.length === 0) {
@@ -108,7 +107,12 @@ const Promotion = () => {
                 setEmployees(result)
               })
             }
-            fetchtypes()
+            if (evaluations.length === 0) {
+                EmpHelper.fetchEvaluationDropdown().then(result => {
+                  setEvaluations(result)
+                })
+              }
+            // fetchtypes()
       }, [])
 
     return (
@@ -117,7 +121,7 @@ const Promotion = () => {
             <>
              <Form onSubmit={handleSubmit}>
             <Row>
-            <Col md={6}>
+            {/* <Col md={6}>
                         <FormGroup>
                             <Label for="type">Type:</Label>
                             <Select
@@ -127,7 +131,7 @@ const Promotion = () => {
                                 onChange={ (e) => { onChangePromotionDataHandler('type', 'select', e) }}
                             />
                         </FormGroup>
-                        </Col>
+                        </Col> */}
                     <Col md={6}>
                         <FormGroup>
                             <Label for="employee">Employee:</Label>
@@ -185,7 +189,7 @@ const Promotion = () => {
                     </Form>
                     </>
             </CardBody>
-            <Requests employees={employees}/>
+            <Requests employees={employees} evaluations={evaluations}/>
         </Card>
     )     
 }
