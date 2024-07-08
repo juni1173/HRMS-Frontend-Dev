@@ -44,7 +44,7 @@ const index = ({ type }) => {
     labelColor = skin === 'dark' ? '#b4b7bd' : '#6e6b7b',
     successColorShade = '#315180',
     gridLineColor = 'rgba(200, 200, 200, 0.2)'
-    const countPermanentEmployeesByDepartment = (arr) => {
+  const countPermanentEmployeesByDepartment = (arr) => {
         const counts = arr.reduce((acc, item) => {
           const department = item.title
           const permanentCount = item.employees_data.filter(employee => employee.status === 'Permanent').length
@@ -62,8 +62,8 @@ const index = ({ type }) => {
         const flatCounts = Object.keys(counts).map(department => ({ department, count: counts[department] }))
         
         return flatCounts
-      }
-      const countProbationEmployeesByDepartment = (arr) => {
+  }
+  const countProbationEmployeesByDepartment = (arr) => {
         const counts = arr.reduce((acc, item) => {
           const department = item.title
           const permanentCount = item.employees_data.filter(employee => employee.status === 'Probation').length
@@ -81,7 +81,65 @@ const index = ({ type }) => {
         const flatCounts = Object.keys(counts).map(department => ({ department, count: counts[department] }))
         
         return flatCounts
+  }
+  const countEmployeesByMale = (arr) => {
+        const counts = arr.reduce((acc, item) => {
+          const department = item.title
+          const maleCount = item.employees_data.filter(employee => employee.gender === 'Male').length
+          
+          if (acc[department]) {
+            acc[department] += maleCount
+          } else {
+            acc[department] = maleCount
+          }
+          
+          return acc
+        }, {})
+    
+      // Convert counts to a flat array of objects
+      const flatCounts = Object.keys(counts).map(department => ({ department, count: counts[department] }))
+      
+      return flatCounts
+  }
+  const countEmployeesByStatusGender = (arr, type, gender) => {
+    const counts = arr.reduce((acc, item) => {
+      const department = item.title
+      const CountArr = item.employees_data.filter(employee => {
+        return employee.gender === gender && employee.status === type
+      })
+      const Count = CountArr.length
+      if (acc[department]) {
+        acc[department] += Count
+      } else {
+        acc[department] = Count
       }
+      return acc
+    }, {})
+
+  // Convert counts to a flat array of objects
+  const flatCounts = Object.keys(counts).map(department => ({ department, count: counts[department] }))
+  
+  return flatCounts
+  }
+  const countEmployeesByFemale = (arr) => {
+      const counts = arr.reduce((acc, item) => {
+        const department = item.title
+        const femaleCount = item.employees_data.filter(employee => employee.gender === 'Female').length
+        
+        if (acc[department]) {
+          acc[department] += femaleCount
+        } else {
+          acc[department] = femaleCount
+        }
+        
+        return acc
+      }, {})
+  
+    // Convert counts to a flat array of objects
+    const flatCounts = Object.keys(counts).map(department => ({ department, count: counts[department] }))
+    
+    return flatCounts
+  }
     const calculateCount = (arr) => {
         settableData(arr.flatMap(item => item.employees_data))
         let totalEmployee = 0
@@ -114,8 +172,20 @@ const index = ({ type }) => {
         const values = arr.map(item => item.total_employee_count)
         const permanentEmployeesArr = countPermanentEmployeesByDepartment(arr)
           const probationEmployeesArr = countProbationEmployeesByDepartment(arr)
+          const maleEmployeesArr = countEmployeesByMale(arr)
+          const femaleEmployeesArr = countEmployeesByFemale(arr)
+          let permanentMaleCount = countEmployeesByStatusGender(arr, 'Permanent', 'Male')
+          let probationMaleCount = countEmployeesByStatusGender(arr, 'Probation', 'Male')
+          let permanentFemaleCount = countEmployeesByStatusGender(arr, 'Permanent', 'Female')
+          let probationFemaleCount = countEmployeesByStatusGender(arr, 'Probation', 'Female')
           const permanentEmployeesCountArr = permanentEmployeesArr.map(item => item.count)
           const probationEmployeesCountArr = probationEmployeesArr.map(item => item.count)
+          const maleCountArr = maleEmployeesArr.map(item => item.count)
+          const femaleCountArr = femaleEmployeesArr.map(item => item.count)
+           permanentMaleCount = permanentMaleCount.map(item => item.count)
+           probationMaleCount = probationMaleCount.map(item => item.count)
+           permanentFemaleCount = permanentFemaleCount.map(item => item.count)
+           probationFemaleCount = probationFemaleCount.map(item => item.count)
           const totalPermanentEmployees = permanentEmployeesCountArr.reduce((accumulator, currentValue) => accumulator + currentValue, 0)
           const totalProbationEmployees = probationEmployeesCountArr.reduce((accumulator, currentValue) => accumulator + currentValue, 0)
           setCountData(prevState => ({
@@ -127,29 +197,87 @@ const index = ({ type }) => {
             labels,
             datasets: [
               {
-                label: 'All Employees',
+                label: 'Total',
                 maxBarThickness: 10,
                 backgroundColor: successColorShade,
                 borderColor: colors.primary.main,
-                borderRadius: { topRight: 15, topLeft: 15, bottomRight: 15 },
-                data: values
+                // borderRadius: { topRight: 15, topLeft: 15, bottomRight: 15 },
+                data: values,
+                stack: 'Stack 0'
               },
               {
-                label: 'Permanent Employees',
+                label: 'Permanent',
                 maxBarThickness: 10,
-                backgroundColor: colors.warning.main,
-                borderColor: colors.warning.main,
-                borderRadius: { topRight: 15, topLeft: 15, bottomRight: 15 },
-                data: permanentEmployeesCountArr
+                backgroundColor: '#1A5319',
+                borderColor: '#1A5319',
+                // borderRadius: { topRight: 15, topLeft: 15, bottomRight: 15 },
+                data: permanentEmployeesCountArr,
+                stack: 'Stack 1'
               },
               {
-                label: 'On Probation Employees',
+                label: 'On Probation',
                 maxBarThickness: 10,
-                backgroundColor: colors.danger.main,
-                borderColor: colors.danger.main,
-                borderRadius: { topRight: 15, topLeft: 15, bottomRight: 15 },
-                data: probationEmployeesCountArr
+                backgroundColor: '#B04759',
+                borderColor: '#B04759',
+                // borderRadius: { topRight: 15, topLeft: 15, bottomRight: 15 },
+                data: probationEmployeesCountArr,
+                stack: 'Stack 2'
+              },
+              {
+                label: 'Male',
+                maxBarThickness: 10,
+                backgroundColor: '#478CCF',
+                borderColor: '#478CCF',
+                // borderRadius: { topRight: 15, topLeft: 15, bottomRight: 15 },
+                data: maleCountArr,
+                stack: 'Stack 0'
+              },
+              {
+                label: 'Female',
+                maxBarThickness: 10,
+                backgroundColor: '#36C2CE',
+                borderColor: '#36C2CE',
+                // borderRadius: { topRight: 15, topLeft: 15, bottomRight: 15 },
+                data: femaleCountArr,
+                stack: 'Stack 0'
+              },
+              {
+                label: 'Permanent Male',
+                maxBarThickness: 10,
+                backgroundColor: '#508D4E',
+                borderColor: '#508D4E',
+                // borderRadius: { topRight: 15, topLeft: 15, bottomRight: 15 },
+                data: permanentMaleCount,
+                stack: 'Stack 1'
+              },
+              {
+                label: 'Permanent Female',
+                maxBarThickness: 10,
+                backgroundColor: '#80AF81',
+                borderColor: '#80AF81',
+                // borderRadius: { topRight: 15, topLeft: 15, bottomRight: 15 },
+                data: permanentFemaleCount,
+                stack: 'Stack 1'
+              },
+              {
+                label: 'Probation Male',
+                maxBarThickness: 10,
+                backgroundColor: '#E76161',
+                borderColor: '#E76161',
+                // borderRadius: { topRight: 15, topLeft: 15, bottomRight: 15 },
+                data: probationMaleCount,
+                stack: 'Stack 2'
+              },
+              {
+                label: 'Probation Female',
+                maxBarThickness: 10,
+                backgroundColor: '#F99B7D',
+                borderColor: '#F99B7D',
+                // borderRadius: { topRight: 15, topLeft: 15, bottomRight: 15 },
+                data: probationFemaleCount,
+                stack: 'Stack 2'
               }
+
             ]
           }
           sethighestTotalEmployeeCount(arr.reduce((max, item) => {
@@ -167,6 +295,7 @@ const index = ({ type }) => {
                 setLoading(true)
                 if (result.status === 200) {
                     const resultData = result.data
+                  console.warn(resultData)
                     setData(resultData)
                     const departments = resultData.map(item => ({
                         label: item.title, 

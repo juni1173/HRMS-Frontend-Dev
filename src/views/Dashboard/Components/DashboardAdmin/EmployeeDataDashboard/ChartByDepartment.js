@@ -32,12 +32,19 @@ const ChartByDepartment = ({ gridLineColor, labelColor, data, highestTotalEmploy
         }
       }
     },
+    layout: {
+      padding: 0
+    },
     plugins: {
       legend: {
-        align: 'end',
         position: 'top',
+        align:'start',
         labels: { 
+          font: {
+            size: 10
+          },
           color: labelColor,
+          align:'left',
            usePointStyle: true, // Use point style to render as circles
         pointStyle: 'circle' }
       },

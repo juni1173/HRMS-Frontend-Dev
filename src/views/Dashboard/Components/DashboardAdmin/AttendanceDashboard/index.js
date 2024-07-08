@@ -27,9 +27,13 @@ const index = () => {
   const Api = apiHelper()
   
   const [countData, setCountData] = useState({
+    Headcount: 0,
     Presents: 0,
+    PresentsData: [],
     WFH: 0,
-    Leaves: 0
+    WFHData: [],
+    Leaves: 0,
+    LeavesData: []
 })
     const [loading, setLoading] = useState(false)
     
@@ -50,14 +54,19 @@ const index = () => {
         let totalWFH = 0 
         
         if (Object.values(arr.attendance_data).length > 0) {
+              
              totalPresents = arr.attendance_data.filter(i => i.attendance_status === 'P').length
              totalWFH = arr.attendance_data.filter(i => i.attendance_status === 'WFH').length
         }
         setCountData(prev => ({
           ...prev,
+          Headcount: arr.employee_count,
           Presents: totalPresents,
+          PresentsData: arr.attendance_data.filter(i => i.attendance_status === 'P'),
           WFH: totalWFH,
-          Leaves: totalLeaves
+          WFHData: arr.attendance_data.filter(i => i.attendance_status === 'WFH'),
+          Leaves: totalLeaves,
+          LeavesData: arr.attendance_data.filter(i => i.attendance_status === 'L')
         }))
         setTimeout(() => {
           setLoading(false)
@@ -71,6 +80,7 @@ const index = () => {
                 setLoading(true)
                 if (result.status === 200) {
                     const resultData = result.data
+                    console.warn(resultData)
                     // setData(prev => ({
                     //     ...prev,
                     //     attendance_data: resultData.attendance_data,
@@ -108,7 +118,7 @@ const index = () => {
                     tooltipShadow={tooltipShadow}
                     successColorShade={successColorShade}
                     warningLightColor={warningLightColor}
-                    primary={colors.primary.main}/>
+                    danger={colors.danger.main}/>
                       
                 </Col>
             </Row>
