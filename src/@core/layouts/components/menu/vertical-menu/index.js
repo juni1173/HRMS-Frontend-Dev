@@ -10,8 +10,8 @@ import VerticalMenuHeader from './VerticalMenuHeader'
 import VerticalNavMenuItems from './VerticalNavMenuItems'
 
 const Sidebar = props => {
-  const org = JSON.parse(localStorage.getItem('organization'))
-  console.log(org)
+  // const org = JSON.parse(localStorage.getItem('organization'))
+  // console.log(org)
   // ** Props
   const { menuCollapsed, routerProps, menu, currentActiveItem, skin, menuData } = props
 

@@ -21,15 +21,11 @@ const VerticalLayout = props => {
   const [userRole, setUserRole] = useState(null)
   const [loading, setLoading] = useState(false)
   useEffect(() => {
-      setLoading(true)
-       setOrg(JSON.parse(localStorage.getItem('organization')) || null)   
-        
-        JSON.parse(localStorage.getItem('userData')) ? setUserRole(JSON.parse(localStorage.getItem('userData')).user_role) : setUserRole(null)
-    
-       setTimeout(() => {
+        setLoading(true)
+          setOrg(JSON.parse(localStorage.getItem('organization')) || null)   
+          JSON.parse(localStorage.getItem('userData')) ? setUserRole(JSON.parse(localStorage.getItem('userData')).user_role) : setUserRole(null)
         setLoading(false)
-       }, 1000)
-  }, [localStorage.getItem('organization')])
+  }, [])
 if (JSON.parse(localStorage.getItem('userData'))) {
   return (
     !loading ? (

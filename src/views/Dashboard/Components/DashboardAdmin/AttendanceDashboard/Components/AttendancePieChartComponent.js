@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, memo } from 'react'
 // ** Third Party Components
 import { Doughnut } from 'react-chartjs-2'
 
@@ -106,13 +106,13 @@ const textCenter = {
             <Table striped responsive>
                 <thead>
                     <tr>
-                        <th className='cursor-pointer' title="List of employees" onClick={() => onClickFunction(countData.PresentsData, countData.Presents, 'presents')}><MdCoPresent size={17} className='text-primary' /> <span style={{fontSize:'xxx-large'}}>{countData.Presents && countData.Presents}</span> Presents</th>
+                        <th className='cursor-pointer' title="List of present employees" onClick={() => onClickFunction(countData.PresentsData, countData.Presents, 'presents')}><MdCoPresent size={17} className='text-primary' /> <span style={{fontSize:'xxx-large'}}>{countData.Presents && countData.Presents}</span> Presents</th>
                     </tr>
                     <tr>
-                        <th className='cursor-pointer' title="List of employees" onClick={() => onClickFunction(countData.WFHData, countData.WFH, 'wfh')}><MdHomeWork size={17} className='text-warning' /> {countData.WFH && countData.WFH} WFH</th>
+                        <th className='cursor-pointer' title="List of WFH employees" onClick={() => onClickFunction(countData.WFHData, countData.WFH, 'wfh')}><MdHomeWork size={17} className='text-warning' /> {countData.WFH && countData.WFH} WFH</th>
                     </tr>
                     <tr>
-                        <th className='cursor-pointer' title="List of employees" onClick={() => onClickFunction(countData.LeavesData, countData.Leaves, 'leaves')}><FcLeave size={17} className='text-success' /> {countData.Leaves && countData.Leaves} Leaves</th>
+                        <th className='cursor-pointer' title="List of on leave employees" onClick={() => onClickFunction(countData.LeavesData, countData.Leaves, 'leaves')}><FcLeave size={17} className='text-success' /> {countData.Leaves && countData.Leaves} Leaves</th>
                     </tr>
                 </thead>
             </Table>
@@ -129,13 +129,13 @@ const textCenter = {
     <Modal isOpen={basicModal} toggle={() => setBasicModal(!basicModal)}>
     <ModalHeader toggle={() => setBasicModal(!basicModal)}>
         {employeeData.type === 'presents' && (
-            <h5 >{employeeData.total} Presents</h5>
+            <b>{employeeData.total} Presents</b>
         )}
         {employeeData.type === 'wfh' && (
-            <h5>{employeeData.total} WFH Today</h5>
+            <b>{employeeData.total} WFH Today</b>
         )}
         {employeeData.type === 'leaves' && (
-            <h5>{employeeData.total} Leaves</h5>
+            <b>{employeeData.total} Leaves</b>
         )}
     </ModalHeader>
     <ModalBody>
@@ -146,4 +146,4 @@ const textCenter = {
   )
 }
 
-export default AttendancePieChartComponent
+export default memo(AttendancePieChartComponent)

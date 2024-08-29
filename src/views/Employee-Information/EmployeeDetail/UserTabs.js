@@ -18,6 +18,7 @@ import EducationDetail from './EducationDetail'
 import SkillDetail from './SkillDetail'
 import DependentDetail from './DependentDetail'
 import About from './About'
+import Analytics from './Analytics'
 const UserTabs = ({ active, toggleTab, empData, CallBack, url_params }) => {
   return (
     <Fragment>
@@ -32,6 +33,12 @@ const UserTabs = ({ active, toggleTab, empData, CallBack, url_params }) => {
           <NavLink active={active === '2'} onClick={() => toggleTab('2')}>
             {/* <User className='font-medium-3 me-50' /> */}
             <span className='fw-bold'>Office</span>
+          </NavLink>
+        </NavItem>
+        <NavItem>
+          <NavLink active={active === '10'} onClick={() => toggleTab('10')}>
+            {/* <User className='font-medium-3 me-50' /> */}
+            <span className='fw-bold'>Analytics</span>
           </NavLink>
         </NavItem>
         <NavItem>
@@ -89,6 +96,15 @@ const UserTabs = ({ active, toggleTab, empData, CallBack, url_params }) => {
           <UserTimeline />
           <InvoiceList /> */}
             <OfficeDetail empData={empData} CallBack={CallBack}/>
+        </TabPane>
+        <TabPane tabId='10'>
+          {/* <UserProjectsList />
+          <UserTimeline />
+          <InvoiceList /> */}
+           {active === '10' ? (
+              <Analytics empData={empData} CallBack={CallBack}/>
+           ) : null}
+            
         </TabPane>
         <TabPane tabId='3'>
           {/* <SecurityTab /> */}

@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from 'react'
+import React, { Fragment, useState, memo } from 'react'
 import { Row, Col, Table, Spinner, Button, Badge, CardBody, Card, Offcanvas, OffcanvasHeader, OffcanvasBody } from 'reactstrap'
 import { Eye } from 'react-feather'
 import Swal from 'sweetalert2'
@@ -409,4 +409,4 @@ const KpiList = ({ data, CallBack, index, type }) => {
   )
 }
 
-export default KpiList
+export default memo(KpiList)

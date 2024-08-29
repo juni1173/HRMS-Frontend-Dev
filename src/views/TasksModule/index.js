@@ -152,7 +152,6 @@ const index = () => {
         [InputName] : InputValue
         
         }))
-    
     }
     const getTasks = async (id = null, sortData = null, type = null) => {
         setTaskLoading(true)

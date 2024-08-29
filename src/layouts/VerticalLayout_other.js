@@ -18,19 +18,21 @@ const VerticalLayout = props => {
   // useEffect(() => {
   //   Api.get(`/navigations/`).then(response => setMenuData(response.data))  
   // }, [])
-  const getNav =  () => {
+  const getNav =  async () => {
     setLoading(true)
-      Api.get(`/navigations/role/based/on/login/user/`).then(response => {
+      await Api.get(`/navigations/role/based/on/login/user/`).then(response => {
         setMenuData(response.data)
         localStorage.setItem('nav', JSON.stringify(response.data))
       })  
      setOrg(JSON.parse(localStorage.getItem('organization')) || null)   
-     setTimeout(() => {
       setLoading(false)
-     }, 1000)
   }
   useEffect(() => {
-      getNav()
+    let isMounted = true
+      if (inMounted) getNav()
+      return () => {
+        isMounted = false
+      }
   }, [])
 
   return (

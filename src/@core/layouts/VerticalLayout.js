@@ -46,7 +46,6 @@ const VerticalLayout = props => {
   const { navbarColor, setNavbarColor } = useNavbarColor()
 
   // ** States
-  const [isMounted, setIsMounted] = useState(false)
   const [menuVisibility, setMenuVisibility] = useState(false)
   const [windowWidth, setWindowWidth] = useState(window.innerWidth)
 
@@ -89,10 +88,6 @@ const VerticalLayout = props => {
   }, [windowWidth])
 
   //** ComponentDidMount
-  useEffect(() => {
-    setIsMounted(true)
-    return () => setIsMounted(false)
-  }, [])
 
   // ** Vars
   const footerClasses = {
@@ -117,9 +112,6 @@ const VerticalLayout = props => {
 
   const bgColorCondition = navbarColor !== '' && navbarColor !== 'light' && navbarColor !== 'white'
 
-  if (!isMounted) {
-    return null
-  }
   return (
     <div
       className={classnames(

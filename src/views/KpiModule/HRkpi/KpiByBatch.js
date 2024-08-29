@@ -83,13 +83,13 @@ const KpiByBatch = ({segmentation, dropdownData, CallBack}) => {
         
     }
     useEffect(() => {
+
         if (Object.values(department).length === 0) {
             depHelper.fetchDepartments().then(result => {
-                console.warn(result)
                 setDepartment(result.depActive)
             })
         }
-    }, [setDepartment])
+    }, [])
   return (
     <Fragment>
         <Card>

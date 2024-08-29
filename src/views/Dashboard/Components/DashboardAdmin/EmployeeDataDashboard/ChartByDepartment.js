@@ -1,3 +1,4 @@
+import { memo } from 'react'
 // ** Third Party Components
 import { Bar } from 'react-chartjs-2'
 
@@ -8,6 +9,7 @@ const ChartByDepartment = ({ gridLineColor, labelColor, data, highestTotalEmploy
   // ** Chart Options
   const options = {
     responsive: true,
+
     maintainAspectRatio: false,
     indexAxis: 'y', // This makes the bar chart horizontal
     animation: { duration: 500 },
@@ -62,7 +64,7 @@ const ChartByDepartment = ({ gridLineColor, labelColor, data, highestTotalEmploy
         <CardTitle tag='h4'>Employee Count By Department</CardTitle>
       </CardHeader>
       <CardBody>
-        <div style={{ height: '400px' }}>
+        <div style={{ height: '400px'}} >
           <Bar data={data} options={options} height={400} />
         </div>
       </CardBody>
@@ -70,4 +72,4 @@ const ChartByDepartment = ({ gridLineColor, labelColor, data, highestTotalEmploy
   )
 }
 
-export default ChartByDepartment
+export default memo(ChartByDepartment)

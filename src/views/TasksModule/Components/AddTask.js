@@ -3,6 +3,9 @@ import { Row, Col, Badge, Input, Button } from 'reactstrap'
 import { Save } from 'react-feather'
 import Select from 'react-select'
 import apiHelper from '../../Helpers/ApiHelper'
+import InputMask from 'react-input-mask'
+import Flatpickr from 'react-flatpickr'
+import '@styles/react/libs/flatpickr/flatpickr.scss'
 const AddTask = ({ projectsData, CallBack }) => {
     const Api = apiHelper()
     const [TaskData, setTaskData] = useState({
@@ -11,6 +14,11 @@ const AddTask = ({ projectsData, CallBack }) => {
         assign_to: '',
         task_type: '',
         priority: '',
+        planned_hours: '',
+        actual_hours: '',
+        account_hours: '',
+        due_date: '',
+        external_ticket_reference: '',
         status: '',
         description: ''
    })
@@ -128,6 +136,10 @@ const AddTask = ({ projectsData, CallBack }) => {
             return false
       }
     let InputValue
+    if (InputType === 'hours') {
+        InputValue = e.target.value
+        InputValue = InputValue.replace(':', '.')
+    }
     if (InputType === 'input') {
     
     InputValue = e.target.value
@@ -135,9 +147,7 @@ const AddTask = ({ projectsData, CallBack }) => {
     
     InputValue = e
     } else if (InputType === 'date') {
-        let dateFomat = e.split('/')
-            dateFomat = `${dateFomat[2]}-${dateFomat[1]}-${dateFomat[0]}`    
-        InputValue = dateFomat
+        InputValue = Api.formatDate(e)
     } else if (InputType === 'file') {
         InputValue = e.target.files[0].name
     }
@@ -184,6 +194,7 @@ const getProjectTaskType = () => {
 }
 const handleSubmit = async (event) => {
     event.preventDefault()
+   
     if (TaskData.title !== '' && TaskData.project !== '' && TaskData.assign_to !== '' && TaskData.description !== ''
     && TaskData.priority !== '' && TaskData.task_type !== '') {
       const formData = new FormData()
@@ -193,6 +204,10 @@ const handleSubmit = async (event) => {
       formData['description'] = TaskData.description
       formData['project_task_type'] = getProjectTaskType()
       formData['priority'] = TaskData.priority
+      if (TaskData.due_date !== '') formData['due_date'] = TaskData.due_date
+      if (TaskData.planned_hours !== '') formData['planned_hours'] = TaskData.planned_hours
+      if (TaskData.actual_hours !== '') formData['actual_hours'] = TaskData.actual_hours
+      if (TaskData.account_hours !== '') formData['account_hour'] = TaskData.account_hours
       formData['task_type'] = TaskData.task_type
       formData['status'] = TaskData.status
       await Api.jsonPost(`/taskify/new/task/`, formData).then(result => {
@@ -282,6 +297,58 @@ const handleSubmit = async (event) => {
                     onChange={ (e) => { onChangeTaskDetailHandler('priority', 'select', e.value) }}
                 />
             </Col>
+            <Col md='3' className='mb-1'>
+            <label className='form-label'>
+                    Due Date
+                </label>
+                <Flatpickr className='form-control' placeholder='YYYY-MM-DD'  onChange={date => onChangeTaskDetailHandler('due_date', 'date', date)} id='default-picker' />
+            </Col>
+            <Col md='3' className='mb-1'>
+            <label className='form-label'>
+                    Planned Hours
+                </label>
+            <InputMask className="form-control"
+                        mask="99:99"  
+                        id="planned_hours"
+                        // value={cnic}
+                        name="planned-hours"
+                        placeholder="HH:MM"
+                        // onBlur={onValidateCnic}
+                        onChange={e => onChangeTaskDetailHandler('planned_hours', 'hours', e)}
+                        
+                        />
+            </Col>
+            <Col md='3' className='mb-1'>
+            <label className='form-label'>
+                    Actual Hours
+                </label>
+            <InputMask className="form-control"
+                        mask="99:99"  
+                        id="actual_hours"
+                        // value={cnic}
+                        name="actual-hours"
+                        placeholder="HH:MM"
+                        // onBlur={onValidateCnic}
+                        onChange={e => onChangeTaskDetailHandler('actual_hours', 'hours', e)}
+                        
+                        />
+            </Col>
+            <Col md='3' className='mb-1'>
+            <label className='form-label'>
+                    Account Hours
+                </label>
+            <InputMask className="form-control"
+                        mask="99:99"  
+                        id="account_hours"
+                        // value={cnic}
+                        name="account-hours"
+                        placeholder="HH:MM"
+                        // onBlur={onValidateCnic}
+                        onChange={e => onChangeTaskDetailHandler('account_hours', 'hours', e)}
+                        
+                        />
+            </Col>
+            
             {/* <Col md={3} className='mb-1'>
                 <label className='form-label'>
                     Status<Badge color='light-danger'>*</Badge>

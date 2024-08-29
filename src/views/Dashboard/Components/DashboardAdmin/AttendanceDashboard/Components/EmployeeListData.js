@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react'
+import React, { Fragment, memo } from 'react'
 import Avatar from '@components/avatar'
 import { Table } from 'reactstrap'
 import { useHistory } from 'react-router-dom'
@@ -44,4 +44,4 @@ const EmployeeListData = ({ empData }) => {
   )
 }
 
-export default EmployeeListData
+export default memo(EmployeeListData)

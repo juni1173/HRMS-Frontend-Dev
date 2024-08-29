@@ -3,6 +3,9 @@ import { Row, Col, Badge, Input, Button, Spinner } from 'reactstrap'
 import { Save } from 'react-feather'
 import Select from 'react-select'
 import apiHelper from '../../Helpers/ApiHelper'
+import InputMask from 'react-input-mask'
+import Flatpickr from 'react-flatpickr'
+import '@styles/react/libs/flatpickr/flatpickr.scss'
 const UpdateTask = ({ projectsData, CallBack, data }) => {
     const Api = apiHelper()
     const [loading, setLoading] = useState(false)
@@ -17,6 +20,11 @@ const UpdateTask = ({ projectsData, CallBack, data }) => {
         assign_to: '',
         task_type: '',
         priority: priority_choices ? priority_choices.find(pre => pre.value === data.priority) : '',
+        planned_hours: '',
+        actual_hours: '',
+        account_hours: '',
+        due_date: '',
+        external_ticket_reference: '',
         status: '',
         description: data.description ? data.description : ''
    })
@@ -147,7 +155,10 @@ const UpdateTask = ({ projectsData, CallBack, data }) => {
             return false
       }
     let InputValue
-    if (InputType === 'input') {
+    if (InputType === 'hours') {
+        InputValue = e.target.value
+        InputValue = InputValue.replace(':', '.')
+    } else if (InputType === 'input') {
     
     InputValue = e.target.value
     } else if (InputType === 'select') {
@@ -168,6 +179,13 @@ const UpdateTask = ({ projectsData, CallBack, data }) => {
     }))
 
 }
+const convertHoursToMMSS = (decimalHours) => {
+    const hours = Math.floor(decimalHours)
+    const minutes = Math.round((decimalHours - hours) * 60)
+    
+    // Ensure two digits for minutes
+    return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`
+  }
 const onChangeProject = (e) => {
     setTaskData(prevState => ({
         ...prevState,
@@ -218,6 +236,10 @@ const handleSubmit = async (event) => {
       formData['description'] = TaskData.description
       formData['project_task_type'] = getProjectTaskType()
       formData['priority'] = TaskData.priority.value
+      if (TaskData.due_date !== '') formData['due_date'] = TaskData.due_date
+      if (TaskData.planned_hours !== '') formData['planned_hours'] = TaskData.planned_hours
+      if (TaskData.actual_hours !== '') formData['actual_hours'] = TaskData.actual_hours
+      if (TaskData.account_hours !== '') formData['account_hour'] = TaskData.account_hours
       formData['task_type'] = TaskData.task_type.value
       formData['status'] = TaskData.status.value
       await Api.jsonPatch(`/taskify/new/task/${data.id}/`, formData).then(result => {
@@ -327,7 +349,59 @@ const handleSubmit = async (event) => {
                     onChange={ (e) => { onChangeTaskDetailHandler('status', 'select', e) }}
                 />
             </Col>
-            
+            <Col md='3' className='mb-1'>
+            <label className='form-label'>
+                    Due Date
+                </label>
+                <Flatpickr className='form-control'
+                defaultValue={data.due_date ? data.due_date : ''}
+                 placeholder='YYYY-MM-DD'  onChange={date => onChangeTaskDetailHandler('due_date', 'date', date)} id='default-picker' />
+            </Col>
+            <Col md='3' className='mb-1'>
+            <label className='form-label'>
+                    Planned Hours
+                </label>
+            <InputMask className="form-control"
+                        mask="99:99"  
+                        id="planned_hours"
+                        defaultValue={data.planned_hours ? convertHoursToMMSS(data.planned_hours) : ''}
+                        name="planned-hours"
+                        placeholder="HH:MM"
+                        // onBlur={onValidateCnic}
+                        onChange={e => onChangeTaskDetailHandler('planned_hours', 'hours', e)}
+                        
+                        />
+            </Col>
+            <Col md='3' className='mb-1'>
+            <label className='form-label'>
+                    Actual Hours
+                </label>
+            <InputMask className="form-control"
+                        mask="99:99"  
+                        id="actual_hours"
+                        defaultValue={data.actual_hours ? convertHoursToMMSS(data.actual_hours) : ''}
+                        name="actual-hours"
+                        placeholder="HH:MM"
+                        // onBlur={onValidateCnic}
+                        onChange={e => onChangeTaskDetailHandler('actual_hours', 'hours', e)}
+                        
+                        />
+            </Col>
+            <Col md='3' className='mb-1'>
+            <label className='form-label'>
+                    Account Hours
+                </label>
+            <InputMask className="form-control"
+                        mask="99:99"  
+                        id="account_hours"
+                        defaultValue={data.account_hour ? convertHoursToMMSS(data.account_hour) : ''}
+                        name="account-hours"
+                        placeholder="HH:MM"
+                        // onBlur={onValidateCnic}
+                        onChange={e => onChangeTaskDetailHandler('account_hours', 'hours', e)}
+                        
+                        />
+            </Col>
             <Col md='8' className='mb-1'>
                 <label className='form-label'>
                 Description <Badge color='light-danger'>*</Badge>

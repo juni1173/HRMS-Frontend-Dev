@@ -5,6 +5,9 @@ import apiHelper from '../../Helpers/ApiHelper'
 import Select from 'react-select'
 import TaskComments from './Comments/comments'
 import UpdateTask from './UpdateTask'
+import { CiCalendarDate } from "react-icons/ci"
+import { HiOutlineLightBulb, HiLightBulb  } from "react-icons/hi"
+import { RiAccountPinCircleFill } from "react-icons/ri"
 const TaskDetail = ({ data, CallBack, projectsData }) => {
     const Api = apiHelper()
     const [statusDropdown, setStatusDropdown] = useState([])
@@ -91,7 +94,6 @@ const TaskDetail = ({ data, CallBack, projectsData }) => {
         const formData = new FormData()
         if (id) {
             formData['status'] = status.value
-            console.warn(projectStatuses)
             if (Object.values(projectStatuses).length > 0) {
                 for (const item of projectStatuses) {
                     if (status.value === item.value) {
@@ -135,7 +137,7 @@ const TaskDetail = ({ data, CallBack, projectsData }) => {
                             </Col>
                         </Row>
                         <div className='d-flex justify-content-between mt-1'>
-                            <div><Badge color='light-warning' title='Assignee' className='cursor-pointer'><User size={'18'}/> {data.assign_to_name ? (data.assign_to_name && data.assign_to_name) : 'N/A'} </Badge></div>
+                            <div><Badge color='light-primary' title='Assignee' className='cursor-pointer'><User size={'18'}/> {data.assign_to_name ? (data.assign_to_name && data.assign_to_name) : 'N/A'} </Badge></div>
                             <div><Badge color={PriorityColor(data.priority)} className='cursor-pointer' title='Priority'><BarChart2 size={'18'}/> {data.priority ? (data.priority && data.priority) : 'N/A'} </Badge></div>
                             <div><Badge color='light-primary' className='cursor-pointer' title='Task Type'><Zap size={'18'}/> {data.task_type_title ? (data.task_type_title && data.task_type_title) : 'N/A'} </Badge></div>
                             <div style={{minWidth: '100px'}}>
@@ -154,6 +156,13 @@ const TaskDetail = ({ data, CallBack, projectsData }) => {
                                 onChange={ (e) => { updateStatus(data.id, e) }}
                             />
                             </div>
+                        </div>
+                        <div className='d-flex justify-content-between mt-1'>
+                        <div><Badge color='light-primary' title='Planned Hours' className='cursor-pointer'><CiCalendarDate size={'18'}/> {`Due: ${data.due_date ? (data.due_date && data.due_date) : 'N/A'}`} </Badge></div>
+                            <div><Badge color='light-primary' title='Planned Hours' className='cursor-pointer'><HiOutlineLightBulb size={'18'}/> {`Planned: ${data.planned_hours ? (data.planned_hours && `${data.planned_hours.replace('.', ':')} hours`) : 'N/A'}`} </Badge></div>
+                            <div><Badge color='light-primary' className='cursor-pointer' title='Actual Hours'><HiLightBulb size={'18'}/> {`Actual: ${data.actual_hours ? (data.actual_hours && `${data.actual_hours.replace('.', ':')} hours`) : 'N/A'}`} </Badge></div>
+                            <div><Badge color='light-primary' className='cursor-pointer' title='Account Hour'><RiAccountPinCircleFill size={'18'}/> {`Account: ${data.account_hour ? (data.account_hour && `${data.account_hour.replace('.', ':')} hours`) : 'N/A'}`} </Badge></div>
+                            
                         </div>
                             <Row className=''>
                                 

@@ -52,14 +52,12 @@ const Employees = ({ employeeList, CallBack, type }) => {
         {value: 150, label: '150'},
         {value: 200, label: '200'}
     ]
-    const getEmployeeData = async () => {
+    const getEmployeeData = () => {
         setLoading(true)
             if (employeeList && Object.values(employeeList).length > 0) {
                     setSearchResults(employeeList)
             } 
-        setTimeout(() => {
-            setLoading(false)
-        }, 500)
+        setLoading(false)
     }
 
     const getSearch = options => {
@@ -279,46 +277,41 @@ const Employees = ({ employeeList, CallBack, type }) => {
                                 <div onClick={() => toggleDropdown(item.uuid)}><MoreVertical/></div>
         {/* </DropdownToggle> */}
         <DropdownMenu>
-          <DropdownItem>{type === 'active' ? (
+          <DropdownItem className="w-100">{type === 'active' ? (
                                     <>
                                     <a href={`/employeeDetail/${item.uuid}`}>
-                                    <button
-                                            className="border-0 no-background"
-                                            title="View Employee Detail"
-                                            >
-                                           <span className="mr-1"><Eye size={12}/></span>Profile
-                                        </button>
+                                        <span className="mr-1"><Eye size={12}/></span>Profile
                                     </a>
                                     </>
                                 ) : (
-                                    <button
+                                    <span
                                     className="border-0 no-background"
                                     title="Activate Employee"
                                     onClick={() => activateAction(item.uuid)}
                                     >
                                     <span className="mr-1"><UserCheck size={12}/></span> Activate
-                                </button>
+                                </span>
                                 )}</DropdownItem>
-      {type === 'active' ? <DropdownItem>
-              <button
+      {type === 'active' ? <DropdownItem className="w-100">
+              <span
                                         className="border-0 no-background"
                                         title="Deactivate Employee"
                                         onClick={() => removeAction(item.uuid)}
                                         >
                                         <span className="mr-1"><UserMinus size={12}/></span>Inactive
-                                    </button> 
+                                    </span> 
          </DropdownItem> : null}
-         {type === 'active' ? <DropdownItem>
-              <button
-                                        className="border-0 no-background"
+         {type === 'active' ? <DropdownItem className="w-100">
+              
+                                    <span className="border-0 no-background"
                                         title="Set Working Model"
                                         onClick={() => handleworkingmodel(item.id)}
                                         >
                                         <span className="mr-1"><UserMinus size={12}/></span>Set Working Model
-                                    </button> 
+                                    </span> 
          </DropdownItem> : null}
-         <DropdownItem>
-         <button
+         <DropdownItem className="w-100">
+         <span
                                         className="border-0 no-background text-nowrap"
                                         // style={{marginTop:'15px', padding:'10px'}}
                                         title="ESS Setup"
@@ -328,10 +321,10 @@ const Employees = ({ employeeList, CallBack, type }) => {
                                         }}
                                         >
                                         <span className="mr-1"><Settings size={12}/></span>ESS Setup
-                                    </button>
+                                    </span>
          </DropdownItem>
-         <DropdownItem>
-         <button
+         <DropdownItem className="w-100">
+         <span
                                         className="border-0 no-background"
                                         // style={{marginTop:'15px', padding:'10px'}}
                                         title="Resume"
@@ -341,7 +334,7 @@ const Employees = ({ employeeList, CallBack, type }) => {
                                         }}
                                         >
                                         <span className="mr-1"><FileText size={12}/> </span>Resume
-                                    </button>
+                                    </span>
          </DropdownItem>
         </DropdownMenu>
       </Dropdown> 

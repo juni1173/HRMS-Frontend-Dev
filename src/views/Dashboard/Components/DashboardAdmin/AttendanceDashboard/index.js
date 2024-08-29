@@ -1,4 +1,4 @@
-import { Fragment, useState, useEffect, useContext } from 'react'
+import { Fragment, useState, useEffect, useContext, useRef } from 'react'
 
 // import {writeFile, utils} from 'xlsx'
 // ** Reactstrap Imports
@@ -25,7 +25,7 @@ const index = () => {
     warningLightColor = '#FDAC34',
     successColorShade = '#315180'
   const Api = apiHelper()
-  
+  const isMounted = useRef(true)
   const [countData, setCountData] = useState({
     Headcount: 0,
     Presents: 0,
@@ -48,7 +48,7 @@ const index = () => {
 
     const calculateCount = (arr) => {
         // settableData(arr.flatMap(item => item.employees_data))
-        setLoading(true)
+      if (isMounted.current)  setLoading(true)
         const totalLeaves = Object.values(arr.leave_data).length > 0 ? Object.values(arr.leave_data).length : 0
         let totalPresents = 0
         let totalWFH = 0 
@@ -58,29 +58,30 @@ const index = () => {
              totalPresents = arr.attendance_data.filter(i => i.attendance_status === 'P').length
              totalWFH = arr.attendance_data.filter(i => i.attendance_status === 'WFH').length
         }
-        setCountData(prev => ({
-          ...prev,
-          Headcount: arr.employee_count,
-          Presents: totalPresents,
-          PresentsData: arr.attendance_data.filter(i => i.attendance_status === 'P'),
-          WFH: totalWFH,
-          WFHData: arr.attendance_data.filter(i => i.attendance_status === 'WFH'),
-          Leaves: totalLeaves,
-          LeavesData: arr.attendance_data.filter(i => i.attendance_status === 'L')
-        }))
-        setTimeout(() => {
-          setLoading(false)
-        }, 500)
+        if (isMounted.current) {
+          setCountData(prev => ({
+            ...prev,
+            Headcount: arr.employee_count,
+            Presents: totalPresents,
+            PresentsData: arr.attendance_data.filter(i => i.attendance_status === 'P'),
+            WFH: totalWFH,
+            WFHData: arr.attendance_data.filter(i => i.attendance_status === 'WFH'),
+            Leaves: totalLeaves,
+            LeavesData: arr.attendance_data.filter(i => i.attendance_status === 'L')
+          }))
+          // setTimeout(() => {
+            setLoading(false)
+          // }, 500)
+        }
+        
     }
     
     const getData = async () => {
-        await Api.jsonPost(`/today/attendance/leave/data/`, {}).then(result => {
-              
+        await Api.jsonPost(`/today/attendance/leave/data/`, {}).then(result => {   
             if (result) {
-                setLoading(true)
+               if (isMounted.current) setLoading(true)
                 if (result.status === 200) {
                     const resultData = result.data
-                    console.warn(resultData)
                     // setData(prev => ({
                     //     ...prev,
                     //     attendance_data: resultData.attendance_data,
@@ -90,18 +91,18 @@ const index = () => {
                 } else {
                     // Api.Toast('error', result.message)
                 }
-                setTimeout(() => {
-                    setLoading(false)
-                }, 500)
+                
+                if (isMounted.current)  setLoading(false)
             } else (
             Api.Toast('error', 'Server not responding!')   
             )
         })  
-       
+       return () => { isMounted.current = false }
       }
      
       useEffect(() => {
         getData()
+        return () => { isMounted.current = false }
         }, [])
   
   return (

@@ -129,7 +129,6 @@ export default function EventsCalender() {
                     <FaBirthdayCake color={active === '2' ? '#fff' : '#315180'} size={'24'}  /> Birthdays
                 </NavLink>
                 </NavItem>
-                
                     </Nav>
                     <TabContent className='py-50' activeTab={active}>
                         <TabPane tabId='1'>

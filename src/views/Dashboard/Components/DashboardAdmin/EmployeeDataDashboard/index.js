@@ -1,12 +1,13 @@
-import { Fragment, useState, useEffect, useContext } from 'react'
+import { Fragment, useState, useEffect, useContext, useRef } from 'react'
 import Select from 'react-select'
 import {writeFile, utils} from 'xlsx'
+import Avatar from '@components/avatar'
 // ** Reactstrap Imports
 import {
     Row, Col, 
     Card,
     CardBody,
-    Spinner, Label, Badge, Button, Progress
+    Spinner, Label, Badge, Button, Progress, Table, Modal, ModalHeader, ModalBody
   } from 'reactstrap'
 import apiHelper from '../../../../Helpers/ApiHelper'
 import ChartByDepartment from './ChartByDepartment'
@@ -22,19 +23,28 @@ import { ThemeColors } from '@src/utility/context/ThemeColors'
 
 // ** Styles
 import '@styles/react/libs/flatpickr/flatpickr.scss'
-
+import { useHistory } from 'react-router-dom'
 const index = ({ type }) => {
+  const history = useHistory()
+  const isMounted = useRef(true)
+    const onClickEmp = (uuid) => {
+        history.push(`/employeeDetail/${uuid}`)
+    }
     const [data, setData] = useState([])
     const [tableData, settableData] = useState([])
     const [empChartData, setEmpChartData] = useState([])
     const [loading, setLoading] = useState(false)
     const [departmentDropdown, setdepDropdown] = useState([])
+    const [listType, setListType] = useState('')
+    const [basicModal, setBasicModal] = useState(false)
     const [countData, setCountData] = useState({
         head_count: 0,
         avg_employee_age: 0,
         avg_tenure: 0,
         totalPermanentEmployees: 0,
-        totalProbationEmployees: 0
+        permanentEmpList: [],
+        totalProbationEmployees: 0,
+        probationEmpList: []
     })
     const [highestTotalEmployeeCount, sethighestTotalEmployeeCount] = useState(0)
     const Api = apiHelper()
@@ -171,6 +181,8 @@ const index = ({ type }) => {
         const labels = arr.map(item => item.title)
         const values = arr.map(item => item.total_employee_count)
         const permanentEmployeesArr = countPermanentEmployeesByDepartment(arr)
+        const permanentList = arr.flatMap(item => item.employees_data).filter(employee => employee.status === 'Permanent')
+        const probationList = arr.flatMap(item => item.employees_data).filter((employee => employee.status === 'Probation'))
           const probationEmployeesArr = countProbationEmployeesByDepartment(arr)
           const maleEmployeesArr = countEmployeesByMale(arr)
           const femaleEmployeesArr = countEmployeesByFemale(arr)
@@ -191,7 +203,9 @@ const index = ({ type }) => {
           setCountData(prevState => ({
             ...prevState,
             totalPermanentEmployees,
-            totalProbationEmployees
+            permanentEmpList: permanentList,
+            totalProbationEmployees,
+            probationEmpList: probationList
         }))
           const EmpResultChart = {
             labels,
@@ -288,36 +302,41 @@ const index = ({ type }) => {
     }
     
     const getData = async () => {
-        
+      
         await Api.get(`/employees/generate/report/`).then(result => {
             
             if (result) {
-                setLoading(true)
+              if (isMounted.current)  setLoading(true)
                 if (result.status === 200) {
                     const resultData = result.data
-                  console.warn(resultData)
-                    setData(resultData)
+                   if (isMounted.current) setData(resultData)
                     const departments = resultData.map(item => ({
                         label: item.title, 
                         value: item.title
                     }))
-                    setdepDropdown(departments)
-                    calculateCount(resultData)
+                    if (isMounted.current)  setdepDropdown(departments)
+                    if (isMounted.current) calculateCount(resultData)
                 } else {
                     // Api.Toast('error', result.message)
                 }
-                setTimeout(() => {
-                    setLoading(false)
-                }, 1000)
+                // setTimeout(() => {
+                  if (isMounted.current)  setLoading(false)
+                // }, 1000)
             } else (
              Api.Toast('error', 'Server not responding!')   
             )
         })  
+        return () => {
+          isMounted.current = false 
+        }
       }
     
       useEffect(() => {
         getData()
-        }, [setData])
+        return () => {
+          isMounted.current = false 
+        }
+        }, [])
     
         // const CallBack = useCallback(() => {
         //     getData()
@@ -368,6 +387,10 @@ const index = ({ type }) => {
             const filteredData = data.filter(item => item.title === e)
             calculateCount(filteredData)
         } else getData()
+    }
+    const handleEmpListModal = (type) => {
+      setListType(type)
+      setBasicModal(!basicModal)
     }
   return (
     <Fragment>
@@ -467,9 +490,9 @@ const index = ({ type }) => {
                     {!loading && (
                         (data && Object.values(data).length > 0) && (
                             <CardBody className=''>
-                                <h3 className='text-white'>{countData.totalPermanentEmployees} Permanents</h3>
+                                <h3 className='text-white cursor-pointer' onClick={() => handleEmpListModal('permanent')}>{countData.totalPermanentEmployees} Permanents</h3>
                                 <Progress className='progress-bar-white' value={Math.round((countData.totalPermanentEmployees / countData.head_count) * 100)} ></Progress> <small className='text-white'>{Math.round((countData.totalPermanentEmployees / countData.head_count) * 100)}% Permanents</small>
-                                <h3 className='text-white'>{countData.totalProbationEmployees} Probations</h3>
+                                <h3 className='text-white cursor-pointer' onClick={() => handleEmpListModal('probation')}>{countData.totalProbationEmployees} Probations</h3>
                                 <Progress className='progress-bar-white' value={Math.round((countData.totalProbationEmployees / countData.head_count) * 100)} ></Progress><small className='text-white'>{Math.round((countData.totalProbationEmployees / countData.head_count) * 100)}% Probations</small>
                                 {/* <p className='text-white'><b></b></p> */}
                             </CardBody>
@@ -488,6 +511,53 @@ const index = ({ type }) => {
         )}
         
       </Row>
+      <Modal isOpen={basicModal} toggle={() => setBasicModal(!basicModal)}>
+        <ModalHeader toggle={() => setBasicModal(!basicModal)}>
+             {listType} Employee List
+        </ModalHeader>
+        <ModalBody>
+        <Table striped responsive>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {listType === 'permanent' && (
+                  (Object.values(countData.permanentEmpList) && Object.values(countData.permanentEmpList).length > 0) ? (
+                    countData.permanentEmpList.map((item, key) => (
+                          <tr key={key} onClick={() => onClickEmp(item.employee_uuid)} className='cursor-pointer' title="profile">
+                              <td><Avatar img={item.profile_image} size='sm'/> {item.employee_name}</td>
+                              <td>{item.status ? item.status : 'N/A'}</td>
+                          </tr>
+                      ))
+                  ) : (
+                      <tr>
+                          <td rowSpan={2}>No data found!</td>
+                      </tr>
+                  )
+                )}
+                {listType === 'probation' && (
+                  (Object.values(countData.probationEmpList) && Object.values(countData.probationEmpList).length > 0) ? (
+                    countData.probationEmpList.map((item, key) => (
+                          <tr key={key} onClick={() => onClickEmp(item.employee_uuid)} className='cursor-pointer' title="profile">
+                              <td><Avatar img={item.profile_image} size='sm'/> {item.employee_name}</td>
+                              <td>{item.status ? item.status : 'N/A'}</td>
+                              
+                          </tr>
+                      ))
+                  ) : (
+                      <tr>
+                          <td rowSpan={2}>No data found!</td>
+                      </tr>
+                  )
+                )}
+                
+            </tbody>
+        </Table>
+        </ModalBody>
+    </Modal>
     </Fragment>
   )
 }

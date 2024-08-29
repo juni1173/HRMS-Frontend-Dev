@@ -59,6 +59,9 @@ const index = () => {
                         <Col md='12'>
                             <GymApprovals data={data.pending_gym ? data.pending_gym : []}/>
                         </Col>
+                        {/* <Col md='12'>
+                            <EventsCalender />
+                        </Col>  */}
                         </Row>
                         
                     </Col>

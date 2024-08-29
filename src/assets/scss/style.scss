@@ -489,3 +489,6 @@ div.configuration_panel .tab-pane-orange {
 	-webkit-user-select: none;
 	touch-action: manipulation;
   }
+  .dropdown-item:active button {
+	color: #fff;
+  }

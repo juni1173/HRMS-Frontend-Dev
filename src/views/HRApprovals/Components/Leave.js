@@ -91,14 +91,14 @@ const Leave = ({ status_choices, yearoptions }) => {
     useEffect(() => {
         setLoading(true)
         setSearchResults(data)
-        getSearch({ list: data, value: null, type: 'equal' })
+            getSearch({ list: data, value: null, type: 'equal' })
         setTimeout(() => {
             setLoading(false)
         }, 1000)
     }, [data])
     useEffect(() => {
         preDataApi()
-        }, [setData, monthvalue, yearvalue])
+        }, [monthvalue, yearvalue])
         
     useEffect(() => {
         if (searchResults && Object.values(searchResults).length > 0) {

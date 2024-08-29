@@ -60,6 +60,7 @@ const Login = () => {
     control,
     setError,
     handleSubmit,
+    reset,
     formState: { errors }
   } = useForm({defaultValues})
   const illustration = skin === 'dark' ? 'login-image.png' : 'login-image.png',
@@ -127,9 +128,8 @@ const Login = () => {
           }
         }
       }
-      setTimeout(() => {
+      reset(defaultValues)
         setLoading(false)
-      }, 500)
   }
 
   return (
